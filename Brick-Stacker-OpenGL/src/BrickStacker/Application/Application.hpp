@@ -6,13 +6,14 @@ namespace BrickStacker
 	class BSApplication
 	{
 	public:
-		//Returns refernce to the application, since this is a singleton
+		//Static func that returns refernce to the application, since this is a singleton
 		static BSApplication& Get()
 		{
 			static BSApplication Application{};
 			return Application;
 		}
 
+		//Runs the game loop
 		void run();
 
 	private:
