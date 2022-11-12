@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\dependancies\lib\glfw\CMakeFiles\762cffa0b4197f9f277940ac32f2e551\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EE9B1067-7447-3C66-8D95-F55A8DD13088}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

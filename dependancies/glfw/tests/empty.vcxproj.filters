@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\glfw\tests\empty.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\glfw\deps\tinycthread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\glfw\deps\tinycthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\glfw\deps\glad\gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\glfw\tests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{FCD42B90-DA53-359F-A35E-080B79C626B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{30EF284A-97C5-3D01-B797-E23ED463910C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
