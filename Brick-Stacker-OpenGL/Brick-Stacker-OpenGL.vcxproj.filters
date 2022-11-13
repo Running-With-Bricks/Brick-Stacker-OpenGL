@@ -21,13 +21,23 @@
     <ClCompile Include="src\EntryPoint\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BrickStacker\Application\Application.cpp">
+    <ClCompile Include="src\BrickStacker\Application\BSApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BrickStacker\Core\Graphics\BSWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\BrickStacker\Application\Application.hpp">
+    <ClInclude Include="src\BrickStacker\Application\BSApplication.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\BrickStacker\Core\Graphics\BSWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\default_shader.vert" />
+    <None Include="shaders\default_shader.frag" />
   </ItemGroup>
 </Project>

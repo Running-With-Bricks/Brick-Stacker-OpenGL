@@ -1,4 +1,4 @@
-#include "BrickStacker/Application/Application.hpp"
+#include "BrickStacker/Application/BSApplication.hpp"
 
 #include <cstdlib>
 #include <iostream>

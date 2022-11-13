@@ -139,12 +139,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\BrickStacker\Application\Application.cpp" />
+    <ClCompile Include="src\BrickStacker\Application\BSApplication.cpp" />
+    <ClCompile Include="src\BrickStacker\Core\Graphics\BSWindow.cpp" />
     <ClCompile Include="src\EntryPoint\EntryPoint.cpp" />
     <ClCompile Include="src\EntryPoint\glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\BrickStacker\Application\Application.hpp" />
+    <ClInclude Include="src\BrickStacker\Application\BSApplication.hpp" />
+    <ClInclude Include="src\BrickStacker\Core\Graphics\BSWindow.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\default_shader.frag" />
+    <None Include="shaders\default_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
