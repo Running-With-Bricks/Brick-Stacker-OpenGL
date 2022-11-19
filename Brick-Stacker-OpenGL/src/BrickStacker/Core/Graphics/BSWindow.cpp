@@ -16,8 +16,11 @@ namespace BrickStacker
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), NULL, NULL);
+		//Kinda important stuff
 		glfwSetWindowUserPointer(m_Window, this);
 		glfwMakeContextCurrent(m_Window);
+		//Limit the resizing
+		glfwSetWindowSizeLimits(m_Window, 266, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		gladLoadGL();
 	}

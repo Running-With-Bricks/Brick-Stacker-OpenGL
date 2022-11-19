@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BrickStacker/Core/Graphics/BSWindow.hpp"
+#include "BrickStacker/Base/DiscordRichPresence.hpp"
 
 namespace BrickStacker
 {
@@ -32,5 +33,7 @@ namespace BrickStacker
 		~BSApplication();
 
 		BSWindow m_BSWindow{ 800, 600, "Brick Stacker" };
+
+		Discord& m_Discord = Discord::Get();
 	};
 }
