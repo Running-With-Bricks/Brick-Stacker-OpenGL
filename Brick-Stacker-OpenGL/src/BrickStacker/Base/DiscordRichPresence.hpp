@@ -26,6 +26,18 @@ namespace BrickStacker
 		/// </summary>
 		void Update();
 
+		/// <summary>
+		/// Sets the Activity State to provided text
+		/// </summary>
+		/// <param name="StateText">Text for new text of activity state</param>
+		void SetActivityState(const char* StateText);
+
+		/// <summary>
+		/// Sets the Activity details to provided text
+		/// </summary>
+		/// <param name="detailsText">Text for new text of activity details</param>
+		void SetActivityDetails(const char* detailsText);
+
 	private:
 		Discord();
 		~Discord();

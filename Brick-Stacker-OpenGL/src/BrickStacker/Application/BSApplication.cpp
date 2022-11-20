@@ -94,6 +94,8 @@ namespace BrickStacker
 		{
 			glfwPollEvents();
 			m_Discord.Update();
+			m_Discord.SetActivityDetails("Hello, ");
+			m_Discord.SetActivityState("World!");
 			
 			glClearColor(0.11f, 0.12f, 0.18f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
