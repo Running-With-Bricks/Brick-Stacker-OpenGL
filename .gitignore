@@ -6,12 +6,18 @@
 **/*.vcxproj.user
 
 #Bin files
-bin/
-bin-obj/
+./bin/
+./bin-obj/
 
 #glfw build
-dependancies/glfw/
-!dependancies/glfw/include/
-!dependancies/glfw/src/Debug/
-!dependancies/glfw/src/Release/
-
+#GitIgnore is dumb, so had to do this
+*.cmake
+*.pc
+dependancies/glfw/.vs/
+dependancies/glfw/CMakeFiles
+dependancies/glfw/examples/
+dependancies/glfw/src/CMakeFiles
+dependancies/glfw/src/glfw.dir
+dependancies/glfw/tests
+dependancies/glfw/x64
+dependancies/glfw/CMakeCache.txt
