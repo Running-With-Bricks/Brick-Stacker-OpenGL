@@ -6,8 +6,8 @@
 **/*.vcxproj.user
 
 #Bin files
-./bin/
-./bin-obj/
+/bin/
+/bin-obj/
 
 #glfw build
 #GitIgnore is dumb, so had to do this
@@ -21,3 +21,6 @@ dependancies/glfw/src/glfw.dir
 dependancies/glfw/tests
 dependancies/glfw/x64
 dependancies/glfw/CMakeCache.txt
+
+#Do not delete any licence files
+![Ll][Ii][Cc][Ee][Nn][Cc][Ee].*
