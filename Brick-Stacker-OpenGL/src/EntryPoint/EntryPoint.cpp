@@ -1,4 +1,4 @@
-#include "BrickStacker/Application/BSApplication.hpp"
+#include "BrickStacker/Application/Application.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -6,11 +6,11 @@
 
 int main()
 {
-	BrickStacker::BSApplication& Application = BrickStacker::BSApplication::Get();
+	BrickStacker::Application& Application = BrickStacker::Application::Get();
 
 	try
 	{
-		Application.run();
+		Application.Run();
 	}
 	catch (const std::exception& e)
 	{
