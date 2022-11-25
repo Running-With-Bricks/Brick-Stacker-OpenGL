@@ -1,7 +1,5 @@
 #include "Application.hpp"
 
-#include "DiscordGameSDK/discord.h"
-
 #include <iostream>
 
 namespace BrickStacker

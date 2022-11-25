@@ -25,19 +25,21 @@ project "Brick-Stacker-OpenGL"
 		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.cpp",
 		"%{prj.location}/src/**.hpp",
+		"%{wks.location}/vendor/glm/glm/**.hpp",
+		"%{wks.location}/vendor/glm/glm/**.inl",
 	}
 
 	includedirs
 	{
 		"%{prj.location}/src",
-		"%{wks.location}/dependancies/glad/include",
-		"%{wks.location}/dependancies/glfw/include",
-		"%{wks.location}/dependancies/glm/include"
+		"%{wks.location}/vendor/glad/include",
+		"%{wks.location}/vendor/glfw/include",
+		"%{wks.location}/dependancies/glm/include/",
 	}
 
 	libdirs
 	{
-		"%{wks.location}/dependancies/DiscordGameSDK/lib/x86_64",
+		"%{wks.location}/vendor/DiscordGameSDK/lib/x86_64",
 		"%{wks.location}/dependancies/glfw/src/Release",
 	}
 
@@ -59,7 +61,7 @@ project "Brick-Stacker-OpenGL"
 
 		postbuildcommands
 		{
-			("copy \"%{wks.location}dependancies\\DiscordGameSDK\\lib\\x86_64\\discord_game_sdk.dll\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\discord_game_sdk.dll\"")
+			("copy \"%{wks.location}vendor\\DiscordGameSDK\\lib\\x86_64\\discord_game_sdk.dll\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\discord_game_sdk.dll\"")
 		}
 
 	filter "configurations:Debug"
