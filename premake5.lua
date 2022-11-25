@@ -25,8 +25,6 @@ project "Brick-Stacker-OpenGL"
 		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.cpp",
 		"%{prj.location}/src/**.hpp",
-		"%{wks.location}/vendor/glm/glm/**.hpp",
-		"%{wks.location}/vendor/glm/glm/**.inl",
 	}
 
 	includedirs
@@ -34,6 +32,7 @@ project "Brick-Stacker-OpenGL"
 		"%{prj.location}/src",
 		"%{wks.location}/vendor/glad/include",
 		"%{wks.location}/vendor/glfw/include",
+		"%{wks.location}/vendor/spdlog/include/",
 		"%{wks.location}/dependancies/glm/include/",
 	}
 

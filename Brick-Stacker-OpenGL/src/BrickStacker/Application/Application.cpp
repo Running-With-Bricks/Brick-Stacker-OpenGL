@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
-#include <iostream>
+#include "glm/glm.hpp"
+#include "spdlog/spdlog.h"
 
 namespace BrickStacker
 {
@@ -95,6 +96,11 @@ namespace BrickStacker
 		//Binding VertexBuffer and IndexBuffer to VertexArray
 		m_PyramidVertexArray->AddVertexBuffer(m_PyramidVertexBuffer);
 		m_PyramidVertexArray->SetIndexBuffer(m_PyramidIndexBuffer);
+
+		glm::vec3 pos{ 0, 1, 2 };
+
+		spdlog::info("Cool {0}", 1);
+		spdlog::error("Not Cool. Error Message {0}, {1}, {2}", pos.x, pos.y, pos.z);
 	}
 
 	Application::~Application()
