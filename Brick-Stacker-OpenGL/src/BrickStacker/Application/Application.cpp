@@ -76,6 +76,8 @@ namespace BrickStacker
 			3, 1, 4
 		};
 
+		
+
 		//Specifying Vertex properties
 		//Vec3 of floats for the position and Vec4 of floats for Color
 		BufferLayout PyramidLayout =

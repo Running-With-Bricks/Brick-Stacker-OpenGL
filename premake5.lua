@@ -31,7 +31,8 @@ project "Brick-Stacker-OpenGL"
 	{
 		"%{prj.location}/src",
 		"%{wks.location}/dependancies/glad/include",
-		"%{wks.location}/dependancies/glfw/include"
+		"%{wks.location}/dependancies/glfw/include",
+		"%{wks.location}/dependancies/glm/include"
 	}
 
 	libdirs
