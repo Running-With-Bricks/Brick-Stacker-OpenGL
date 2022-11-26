@@ -1,6 +1,5 @@
 #include "Application.hpp"
 
-#include "glm/glm.hpp"
 #include "BrickStacker/Utils/Log.hpp"
 
 namespace BrickStacker
@@ -12,11 +11,14 @@ namespace BrickStacker
 			layout(location = 0) in vec3 position;
 			layout(location = 1) in vec4 color;
 
+			uniform mat4 u_ViewMatrix;
+			uniform mat4 u_ProjectionMatrix;
+
 			out vec4 colour;
 
 			void main()
 			{
-				gl_Position = vec4(position.x, position.y, position.z, 1.0);
+				gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(position, 1.0);
 				colour = color;
 			}
 		)";
@@ -71,7 +73,7 @@ namespace BrickStacker
 			0, 2, 3,
 			0, 3, 4,
 			0, 4, 1,
-			1, 2, 3,
+			1, 3, 2,
 			3, 1, 4
 		};
 
@@ -94,6 +96,9 @@ namespace BrickStacker
 		//Binding VertexBuffer and IndexBuffer to VertexArray
 		m_PyramidVertexArray->AddVertexBuffer(m_PyramidVertexBuffer);
 		m_PyramidVertexArray->SetIndexBuffer(m_PyramidIndexBuffer);
+
+		m_Camera.reset(new Camera());
+		m_Camera->SetViewTarget({ 1, 2, -2 }, { 0, 0, 0 });
 	}
 
 	Application::~Application()
@@ -103,13 +108,16 @@ namespace BrickStacker
 
 	void Application::Run()
 	{
-		glClearColor(0.1f, 0.12f, 0.2f, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		RenderCommand::SetClearColor({ 0.1f, 0.12f, 0.2f, 1 });
+		RenderCommand::Clear();
+
 		m_Window.Update();
 		m_Window.SetVSync(true);
 
 		m_Discord.SetActivityDetails("Brick Stacking, Brick Build Together");
 		m_Discord.SetActivityState("Part Piece Construct Make Create Set.");
+
+		m_Renderer.SetCamera(m_Camera);
 
 		while (!m_Window.ShouldClose())
 		{
@@ -121,18 +129,12 @@ namespace BrickStacker
 
 	void Application::Draw()
 	{
-		glClearColor(0.11f, 0.12f, 0.18f, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		m_Camera->SetPerspectiveProjection(70, m_Window.GetAspectRatio(), 0.1, 12);
 
-		m_MainShader->Bind();
+		RenderCommand::Clear();
 
-		m_VertexArray->Bind();
-		glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
-
-		//Binding VertexArray to specify that we are using it rn
-		//And then drawing
-		m_PyramidVertexArray->Bind();
-		glDrawElements(GL_TRIANGLES, m_PyramidVertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+		m_Renderer.Submit(m_VertexArray, m_MainShader);
+		m_Renderer.Submit(m_PyramidVertexArray, m_MainShader);
 
 		m_Window.Update();
 	}

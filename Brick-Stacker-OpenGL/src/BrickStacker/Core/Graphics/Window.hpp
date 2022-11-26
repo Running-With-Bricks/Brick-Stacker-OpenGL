@@ -42,15 +42,20 @@ namespace BrickStacker
 			return m_VSync;
 		}
 
+		bool ShouldClose() const
+		{
+			return glfwWindowShouldClose(m_Window);
+		}
+
+		float GetAspectRatio() const
+		{
+			return (float)m_Width / (float)m_Height;
+		}
+
 		void Update()
 		{
 			glfwPollEvents();
 			glfwSwapBuffers(m_Window);
-		}
-
-		bool ShouldClose() const
-		{
-			return glfwWindowShouldClose(m_Window);
 		}
 
 	private:

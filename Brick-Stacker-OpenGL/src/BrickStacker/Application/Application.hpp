@@ -4,6 +4,7 @@
 
 #include "BrickStacker/Core/Renderer/Shader.hpp"
 #include "BrickStacker/Core/Renderer/Buffer.hpp"
+#include "BrickStacker/Core/Renderer/Renderer.hpp"
 
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
 #include "BrickStacker/Utils/Timer.hpp"
@@ -42,6 +43,9 @@ namespace BrickStacker
 		std::shared_ptr<VertexBuffer> m_PyramidVertexBuffer;
 		std::shared_ptr<IndexBuffer>  m_PyramidIndexBuffer;
 		std::shared_ptr<VertexArray>  m_PyramidVertexArray;
+
+		std::shared_ptr<Camera> m_Camera;
+		Renderer& m_Renderer = Renderer::Get();
 
 		Timer m_Timer{};
 
