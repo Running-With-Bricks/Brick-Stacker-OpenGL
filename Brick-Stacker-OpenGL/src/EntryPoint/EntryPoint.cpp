@@ -1,4 +1,5 @@
 #include "BrickStacker/Application/Application.hpp"
+#include "BrickStacker/Utils/Log.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -6,6 +7,8 @@
 
 int main()
 {
+	BrickStacker::Log::Init();
+	BrickStacker::Log::GetLogger()->trace("Started the Logger");
 	BrickStacker::Application& Application = BrickStacker::Application::Get();
 
 	try
