@@ -75,8 +75,6 @@ namespace BrickStacker
 			3, 1, 4
 		};
 
-		
-
 		//Specifying Vertex properties
 		//Vec3 of floats for the position and Vec4 of floats for Color
 		BufferLayout PyramidLayout =
@@ -96,8 +94,6 @@ namespace BrickStacker
 		//Binding VertexBuffer and IndexBuffer to VertexArray
 		m_PyramidVertexArray->AddVertexBuffer(m_PyramidVertexBuffer);
 		m_PyramidVertexArray->SetIndexBuffer(m_PyramidIndexBuffer);
-
-		glm::vec3 pos{ 0, 1, 2 };
 	}
 
 	Application::~Application()

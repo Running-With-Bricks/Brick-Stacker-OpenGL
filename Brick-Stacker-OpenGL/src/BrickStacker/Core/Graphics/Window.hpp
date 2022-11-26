@@ -34,7 +34,7 @@ namespace BrickStacker
 		void SetVSync(bool state)
 		{
 			m_VSync = state;
-			glfwSwapInterval(state);
+			glfwSwapInterval(state ? 1 : 0);
 		}
 
 		bool IsVSync() const

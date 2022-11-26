@@ -2,6 +2,8 @@
 
 #include "glad/glad.h"
 
+#include "BrickStacker/Utils/Log.hpp"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -46,8 +48,9 @@ namespace BrickStacker
 			case ShaderDataType::Mat2:   return 4 * 2 * 2;
 			case ShaderDataType::Mat3:   return 4 * 3 * 3;
 			case ShaderDataType::Mat4:   return 4 * 4 * 4;
-			default: return 0;
 		}
+
+		BS_ASSERT(false, "Unknown ShaderDataType: {0}", (int)type);
 	}
 
 	static uint32_t GetShaderDataTypeComponentCount(ShaderDataType type)
@@ -77,8 +80,9 @@ namespace BrickStacker
 			case BrickStacker::ShaderDataType::Mat2:	return 2 * 2;
 			case BrickStacker::ShaderDataType::Mat3:	return 3 * 3;
 			case BrickStacker::ShaderDataType::Mat4:	return 4 * 4;
-			default: return 0;
 		}
+
+		BS_ASSERT(false, "Unknown ShaderDataType: {0}", (int)type);
 	}
 
 	static GLenum ShaderDataTypeToOpenGL(ShaderDataType type)
@@ -108,8 +112,9 @@ namespace BrickStacker
 			case BrickStacker::ShaderDataType::Mat2:	return GL_FLOAT;
 			case BrickStacker::ShaderDataType::Mat3:	return GL_FLOAT;
 			case BrickStacker::ShaderDataType::Mat4:	return GL_FLOAT;
-			default: return 0;
 		}
+
+		BS_ASSERT(false, "Unknown ShaderDataType: {0}", (int)type);
 	}
 
 	struct BufferElement

@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "BrickStacker/Utils/Log.hpp"
+
 #include <vector>
 
 namespace BrickStacker
@@ -32,6 +34,8 @@ namespace BrickStacker
 			glDeleteShader(vertexShader);
 
 			// Use the infoLog as you see fit.
+			BS_ERROR("{0}", infoLog.data());
+			BS_ASSERT(false, "Failed to compile Vertex Shader");
 
 			// In this simple program, we'll just leave
 			return;
@@ -64,6 +68,8 @@ namespace BrickStacker
 			glDeleteShader(vertexShader);
 
 			// Use the infoLog as you see fit.
+			BS_ERROR("{0}", infoLog.data());
+			BS_ASSERT(false, "Failed to compile Fragment Shader");
 
 			// In this simple program, we'll just leave
 			return;
@@ -100,6 +106,8 @@ namespace BrickStacker
 			glDeleteShader(fragmentShader);
 
 			// Use the infoLog as you see fit.
+			BS_ERROR("{0}", infoLog.data());
+			BS_ASSERT(false, "Failed to compile Shader Program");
 
 			// In this simple program, we'll just leave
 			return;

@@ -87,6 +87,8 @@ namespace BrickStacker
 
 	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
+		BS_ASSERT(vertexBuffer->GetLayout().GetElements().size() > 0, "Provided VertexBuffer has no BufferLayout!");
+
 		glBindVertexArray(m_BufferID);
 		vertexBuffer->Bind();
 

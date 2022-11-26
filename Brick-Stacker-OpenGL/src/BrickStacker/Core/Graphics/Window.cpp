@@ -17,7 +17,6 @@ namespace BrickStacker
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 		m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), NULL, NULL);
-		//glfwSetWindowPos(m_Window, 0, 10);
 
 		glfwSetWindowUserPointer(m_Window, this);
 		glfwMakeContextCurrent(m_Window);

@@ -30,7 +30,7 @@ namespace BrickStacker
 #define BS_FATAL(...) ::BrickStacker::Log::GetLogger()->critical(__VA_ARGS__)
 
 #ifdef BS_ENABLE_ASSERTS
-	#define BS_ASSERT(x, msg, ...) { if(!(x)) { BS_ERROR(msg, __VA_ARGS__); __debugbreak(); } }
+	#define BS_ASSERT(x, ...) { if(!(x)) { BS_ERROR(__VA_ARGS__); __debugbreak(); } }
 #else
-	#define BS_ASSERT(x, msg, ...) { if(!(x)) { BS_ERROR(msg, __VA_ARGS__); }; }
+	#define BS_ASSERT(x, ...) { if(!(x)) { BS_ERROR(__VA_ARGS__); }; }
 #endif
