@@ -24,7 +24,7 @@ namespace BrickStacker
 		void SetCamera(const std::shared_ptr<Camera>& camera);
 		void EndScene();
 
-		void Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader);
+		void Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::vec3& scale = { 1, 1, 1 });
 	private:
 		Renderer()
 		{

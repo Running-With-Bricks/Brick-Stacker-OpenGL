@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 
 #include "glm/glm.hpp"
-#include "glm/gtc//type_ptr.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <string>
 
@@ -20,6 +20,6 @@ namespace BrickStacker
 
 		void SetUniformMat4(const std::string& name, const glm::mat4& matrix) const;
 	private:
-		uint32_t m_ShaderID;
+		uint32_t m_RendererID;
 	};
 }

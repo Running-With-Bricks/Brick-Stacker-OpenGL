@@ -12,10 +12,11 @@ namespace BrickStacker
 
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader)
+	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::vec3& scale)
 	{
 		shader->Bind();
 
+		shader->SetUniformMat4("u_Transform", glm::scale(glm::mat4{ 1 }, scale));
 		shader->SetUniformMat4("u_ViewMatrix", m_SceneCamera->GetViewMatrix());
 		shader->SetUniformMat4("u_ProjectionMatrix", m_SceneCamera->GetProjectionMatrix());
 

@@ -78,29 +78,29 @@ namespace BrickStacker
 		// Vertex and fragment shaders are successfully compiled.
 		// Now time to link them together into a program.
 		// Get a program object.
-		m_ShaderID = glCreateProgram();
+		m_RendererID = glCreateProgram();
 
 		// Attach our shaders to our program
-		glAttachShader(m_ShaderID, vertexShader);
-		glAttachShader(m_ShaderID, fragmentShader);
+		glAttachShader(m_RendererID, vertexShader);
+		glAttachShader(m_RendererID, fragmentShader);
 
 		// Link our program
-		glLinkProgram(m_ShaderID);
+		glLinkProgram(m_RendererID);
 
 		// Note the different functions here: glGetProgram* instead of glGetShader*.
 		GLint isLinked = 0;
-		glGetProgramiv(m_ShaderID, GL_LINK_STATUS, (int*)&isLinked);
+		glGetProgramiv(m_RendererID, GL_LINK_STATUS, (int*)&isLinked);
 		if (isLinked == GL_FALSE)
 		{
 			GLint maxLength = 0;
-			glGetProgramiv(m_ShaderID, GL_INFO_LOG_LENGTH, &maxLength);
+			glGetProgramiv(m_RendererID, GL_INFO_LOG_LENGTH, &maxLength);
 
 			// The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(m_ShaderID, maxLength, &maxLength, &infoLog[0]);
+			glGetProgramInfoLog(m_RendererID, maxLength, &maxLength, &infoLog[0]);
 
 			// We don't need the program anymore.
-			glDeleteProgram(m_ShaderID);
+			glDeleteProgram(m_RendererID);
 			// Don't leak shaders either.
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
@@ -114,18 +114,18 @@ namespace BrickStacker
 		}
 
 		// Always detach shaders after a successful link.
-		glDetachShader(m_ShaderID, vertexShader);
-		glDetachShader(m_ShaderID, fragmentShader);
+		glDetachShader(m_RendererID, vertexShader);
+		glDetachShader(m_RendererID, fragmentShader);
 	}
 
 	Shader::~Shader()
 	{
-		glDeleteProgram(m_ShaderID);
+		glDeleteProgram(m_RendererID);
 	}
 
 	void Shader::Bind() const
 	{
-		glUseProgram(m_ShaderID);
+		glUseProgram(m_RendererID);
 	}
 
 	void Shader::Unbind() const
@@ -135,7 +135,7 @@ namespace BrickStacker
 
 	void Shader::SetUniformMat4(const std::string& name, const glm::mat4& matrix) const
 	{
-		GLint location = glGetUniformLocation(m_ShaderID, name.c_str());
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		BS_ASSERT(location != -1, "Specified Uniform does not exist: {0}", name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}

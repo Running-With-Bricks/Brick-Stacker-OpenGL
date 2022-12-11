@@ -2,30 +2,50 @@
 
 namespace BrickStacker
 {
-	void Camera::SetOrthographicProjection(
-		float left, float right, float top, float bottom, float nearPlane, float farPlane) {
+	void Camera::SetOrthographicProjection(FrustumPlanes planes)
+	{
+		Planes = planes;
+
 		m_ProjectionMatrix = glm::mat4{ 1.0f };
-		m_ProjectionMatrix[0][0] = 2.f / (right - left);
-		m_ProjectionMatrix[1][1] = 2.f / (bottom - top);
-		m_ProjectionMatrix[2][2] = 1.f / (farPlane - nearPlane);
-		m_ProjectionMatrix[3][0] = -(right + left) / (right - left);
-		m_ProjectionMatrix[3][1] = -(bottom + top) / (bottom - top);
-		m_ProjectionMatrix[3][2] = -nearPlane / (farPlane - nearPlane);
+		m_ProjectionMatrix[0][0] = 2.f / (Planes.Right - Planes.Left);
+		m_ProjectionMatrix[1][1] = 2.f / (Planes.Bottom - Planes.Top);
+		m_ProjectionMatrix[2][2] = 1.f / (Planes.Far - Planes.Near);
+		m_ProjectionMatrix[3][0] = -(Planes.Right + Planes.Left) / (Planes.Right - Planes.Left);
+		m_ProjectionMatrix[3][1] = -(Planes.Bottom + Planes.Top) / (Planes.Bottom - Planes.Top);
+		m_ProjectionMatrix[3][2] = -Planes.Near / (Planes.Far - Planes.Near);
 	}
 
-	void Camera::SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane) {
-		fovy = glm::radians(fovy);
-		assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
-		const float tanHalfFovy = tan(fovy / 2.f);
+	void Camera::SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far)
+	{
+		FrustumPlanes newPlanes{ left, right, top, bottom, near, far };
+
+		SetOrthographicProjection(newPlanes);
+	}
+
+	void Camera::SetPerspectiveProjection(float fov, float aspect, float near, float far)
+	{
+		Aspect = aspect;
+		FOV = fov;
+
+		Planes.Near = near;
+		Planes.Far = far;
+
+		fov = glm::radians(FOV);
+		assert(glm::abs(Aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+		const float tanHalfFov = tan(fov / 2.f);
 		m_ProjectionMatrix = glm::mat4{ 0.0f };
-		m_ProjectionMatrix[0][0] = 1.f / (aspect * tanHalfFovy);
-		m_ProjectionMatrix[1][1] = 1.f / (tanHalfFovy);
-		m_ProjectionMatrix[2][2] = farPlane / (farPlane - nearPlane);
+		m_ProjectionMatrix[0][0] = 1.f / (Aspect * tanHalfFov);
+		m_ProjectionMatrix[1][1] = 1.f / (tanHalfFov);
+		m_ProjectionMatrix[2][2] = Planes.Far / (Planes.Far - Planes.Near);
 		m_ProjectionMatrix[2][3] = 1.f;
-		m_ProjectionMatrix[3][2] = -(farPlane * nearPlane) / (farPlane - nearPlane);
+		m_ProjectionMatrix[3][2] = -(Planes.Far * Planes.Near) / (Planes.Far - Planes.Near);
 	}
 
-	void Camera::SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
+	void Camera::SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up)
+	{
+		Position = position;
+		TargetPos = Position + direction;
+
 		const glm::vec3 w{ glm::normalize(direction) };
 		const glm::vec3 u{ glm::normalize(glm::cross(w, up)) };
 		const glm::vec3 v{ glm::cross(w, u) };
@@ -40,17 +60,22 @@ namespace BrickStacker
 		m_ViewMatrix[0][2] = w.x;
 		m_ViewMatrix[1][2] = w.y;
 		m_ViewMatrix[2][2] = w.z;
-		m_ViewMatrix[3][0] = -glm::dot(u, position);
-		m_ViewMatrix[3][1] = -glm::dot(v, position);
-		m_ViewMatrix[3][2] = -glm::dot(w, position);
+		m_ViewMatrix[3][0] = -glm::dot(u, Position);
+		m_ViewMatrix[3][1] = -glm::dot(v, Position);
+		m_ViewMatrix[3][2] = -glm::dot(w, Position);
 	}
 
-	void Camera::SetViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
+	void Camera::SetViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up)
+	{
 		SetViewDirection(position, target - position, up);
 	}
 
-	void Camera::SetViewYXZ(glm::vec3 position, glm::vec3 rotation) {
-		const float x{ glm::radians(glm::clamp(rotation.x, -90.f, 90.f)) }, y{ glm::radians(rotation.y) }, z{ glm::radians(rotation.z) };
+	void Camera::SetViewYXZ(glm::vec3 position, glm::vec3 rotation)
+	{
+		Position = position;
+		Rotation = rotation;
+
+		const float x{ glm::radians(glm::clamp(Rotation.x, -90.f, 90.f)) }, y{ glm::radians(Rotation.y) }, z{ glm::radians(Rotation.z) };
 		const float c3 = glm::cos(z);
 		const float s3 = glm::sin(z);
 		const float c2 = glm::cos(x);
@@ -70,8 +95,45 @@ namespace BrickStacker
 		m_ViewMatrix[0][2] = w.x;
 		m_ViewMatrix[1][2] = w.y;
 		m_ViewMatrix[2][2] = w.z;
-		m_ViewMatrix[3][0] = -glm::dot(u, position);
-		m_ViewMatrix[3][1] = -glm::dot(v, position);
-		m_ViewMatrix[3][2] = -glm::dot(w, position);
+		m_ViewMatrix[3][0] = -glm::dot(u, Position);
+		m_ViewMatrix[3][1] = -glm::dot(v, Position);
+		m_ViewMatrix[3][2] = -glm::dot(w, Position);
+	}
+
+	void Camera::Update()
+	{
+		if (Type == CameraType::Orthographic)
+		{
+			SetOrthographicProjection(Planes);
+		}
+		else if (Type == CameraType::Perspective)
+		{
+			SetPerspectiveProjection(FOV, Aspect, Planes.Near, Planes.Far);
+		}
+
+		if (Behaviour == CameraBehaviour::None)
+		{
+
+		}
+		else if (Behaviour == CameraBehaviour::Free)
+		{
+			SetViewYXZ(Position, Rotation);
+		}
+		else if (Behaviour == CameraBehaviour::Orbit)
+		{
+			SetViewTarget(Position, TargetPos);
+		}
+	}
+
+	FrustumPlanes::FrustumPlanes(float left, float right, float top, float bottom, float near, float far)
+	{
+		Left = left;
+		Right = right;
+
+		Top = top;
+		Bottom = bottom;
+
+		Near = near;
+		Far = far;
 	}
 }

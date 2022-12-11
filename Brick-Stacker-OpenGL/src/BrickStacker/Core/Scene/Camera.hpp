@@ -4,15 +4,44 @@
 
 namespace BrickStacker
 {
+	enum class CameraType
+	{
+		Perspective = 0,
+		Orthographic
+	};
+
+	enum class CameraBehaviour
+	{
+		None = 0,
+		Free,
+		Orbit
+	};
+
+	struct FrustumPlanes
+	{
+		float Left{ -1 };
+		float Right{ 1 };
+
+		float Top{ -1 };
+		float Bottom{ 1 };
+
+		float Near{ .1f };
+		float Far{ 128 };
+
+		FrustumPlanes() = default;
+		FrustumPlanes(float left, float right, float top, float bottom, float near, float far);
+	};
+
 	class Camera
 	{
 	public:
 		Camera() {};
 		~Camera() {};
 
-		void SetOrthographicProjection(float left, float right, float top, float bottom, float Plane, float farPlane);
+		void SetOrthographicProjection(FrustumPlanes planes);
+		void SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
 
-		void SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane);
+		void SetPerspectiveProjection(float fovy, float aspect, float near, float far);
 
 		const glm::mat4 GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4 GetViewMatrix() const { return m_ViewMatrix; }
@@ -20,6 +49,18 @@ namespace BrickStacker
 		void SetViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up = glm::vec3(0, -1, 0));
 		void SetViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up = glm::vec3(0, -1, 0));
 		void SetViewYXZ(glm::vec3 position, glm::vec3 rotation);
+
+		void Update();
+
+		CameraType Type{ CameraType::Perspective };
+		CameraBehaviour Behaviour{ CameraBehaviour::Free };
+
+		float Aspect{ 1 };
+		float FOV{ 70 };
+		glm::vec3 Position{};
+		glm::vec3 Rotation{};
+		glm::vec3 TargetPos{};
+		FrustumPlanes Planes{};
 
 	private:
 		glm::mat4 m_ProjectionMatrix{ 1 };

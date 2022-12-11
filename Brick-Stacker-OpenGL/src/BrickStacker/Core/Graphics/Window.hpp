@@ -18,7 +18,7 @@ namespace BrickStacker
 
 		static void ResizeCallback(GLFWwindow* window, int width, int height);
 
-		//GLFWwindow* GetWindow() { return m_Window; };
+		GLFWwindow* GetWindow() const { return m_Window; };
 
 		void SetTitle(std::string title)
 		{
@@ -26,7 +26,7 @@ namespace BrickStacker
 			glfwSetWindowTitle(m_Window, m_Title.c_str());
 		}
 
-		std::string GetTitle() const
+		const std::string GetTitle() const
 		{
 			return m_Title;
 		}
@@ -45,6 +45,16 @@ namespace BrickStacker
 		bool ShouldClose() const
 		{
 			return glfwWindowShouldClose(m_Window);
+		}
+
+		int GetWindowWidth()
+		{
+			return m_Width;
+		}
+
+		int GetWindowHeight()
+		{
+			return m_Height;
 		}
 
 		float GetAspectRatio() const
