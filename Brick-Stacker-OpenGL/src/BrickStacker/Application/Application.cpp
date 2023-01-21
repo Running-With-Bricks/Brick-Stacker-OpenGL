@@ -40,18 +40,18 @@ namespace BrickStacker
 			}
 		)";
 
-		m_MainShader.reset(new Shader(vertCode, fragCode));
+		m_MainShader = Shader::Create(vertCode, fragCode);
 
-		m_VertexArray.reset(new VertexArray());
+		m_VertexArray = VertexArray::Create();
 		
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		std::shared_ptr<IndexBuffer> indexBuffer;
+		Ref<VertexBuffer> vertexBuffer;
+		Ref<IndexBuffer> indexBuffer;
 
-		vertexBuffer.reset(new VertexBuffer({
+		vertexBuffer = VertexBuffer::Create({
 			-0.5f, 0.5f, 0, 1, 0, 0, 1,
 			0.5f, 0.5f, 0,  0, 1, 0, 1,
 			0, -0.5f, 0,    0, 0, 1, 1,
-			}));
+			});
 		BufferLayout layout =
 		{
 			{ ShaderDataType::Vec3, "position" },
@@ -59,7 +59,7 @@ namespace BrickStacker
 		};
 		vertexBuffer->SetLayout(layout);
 		
-		indexBuffer.reset(new IndexBuffer({ 0, 1, 2 }));
+		indexBuffer = IndexBuffer::Create({ 0, 1, 2 });
 		
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 		m_VertexArray->SetIndexBuffer(indexBuffer);
@@ -187,12 +187,12 @@ namespace BrickStacker
 		};
 
 		//Creating objects which will hold cube data
-		std::shared_ptr<VertexBuffer> cubeVertexBuffer;
-		std::shared_ptr<IndexBuffer> cubeIndexBuffer;
+		Ref<VertexBuffer> cubeVertexBuffer;
+		Ref<IndexBuffer> cubeIndexBuffer;
 
-		m_CubeVertexArray.reset(new VertexArray());
-		cubeVertexBuffer.reset(new VertexBuffer(CubeVerticies));
-		cubeIndexBuffer.reset(new IndexBuffer(CubeIndicies));
+		m_CubeVertexArray = VertexArray::Create();
+		cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
+		cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
 
 		//Setting the layout
 		cubeVertexBuffer->SetLayout(CubeLayout);
@@ -202,12 +202,12 @@ namespace BrickStacker
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		//Creating objects which will hold cube data
-		std::shared_ptr<VertexBuffer> skyboxVertexBuffer;
-		std::shared_ptr<IndexBuffer> skyboxIndexBuffer;
+		Ref<VertexBuffer> skyboxVertexBuffer;
+		Ref<IndexBuffer> skyboxIndexBuffer;
 
-		m_SkyboxVertexArray.reset(new VertexArray());
-		skyboxVertexBuffer.reset(new VertexBuffer(SkyboxVerticies));
-		skyboxIndexBuffer.reset(new IndexBuffer(SkyboxIndicies));
+		m_SkyboxVertexArray = VertexArray::Create();
+		skyboxVertexBuffer = VertexBuffer::Create(SkyboxVerticies);
+		skyboxIndexBuffer = IndexBuffer::Create(SkyboxIndicies);
 
 		//Setting the layout
 		skyboxVertexBuffer->SetLayout(CubeLayout);
@@ -216,8 +216,13 @@ namespace BrickStacker
 		m_SkyboxVertexArray->AddVertexBuffer(skyboxVertexBuffer);
 		m_SkyboxVertexArray->SetIndexBuffer(skyboxIndexBuffer);
 
-		m_Camera.reset(new Camera());
+		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 0, -2 };
+
+		FramebufferSpecifications fbSpecs;
+		fbSpecs.Width = 1024;
+		fbSpecs.Height = 1024;
+		m_Framebuffer = Framebuffer::Create(fbSpecs); //New
 	}
 
 	Application::~Application()
@@ -248,27 +253,34 @@ namespace BrickStacker
 
 	void Application::Draw()
 	{
-		m_Camera->Aspect = m_Window.GetAspectRatio();
-		m_Camera->Update();
-
 		RenderCommand::Clear();
 
-		m_Renderer.Submit(m_VertexArray, m_MainShader);
-		m_Renderer.Submit(m_CubeVertexArray, m_MainShader, { .1f, 2, .5f });
-		m_Renderer.Submit(m_SkyboxVertexArray, m_MainShader, { 32, 32, 32 });
-
 		m_ImGui.BeginFrame();
-		ImGui::ShowDemoWindow();
-		
+		ImGui::DockSpaceOverViewport();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
+		auto viewportSize = ImGui::GetContentRegionAvail();
+		if (m_ViewportSize != *((glm::vec2*)&viewportSize) && viewportSize.x != 0 && viewportSize.y != 0)
+		{
+			m_ViewportSize = { viewportSize.x, viewportSize.y };
+			glViewport(0, 0, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
+
+		auto textureID = m_Framebuffer->GetColorAttachmentRendererID();
+
+		if (textureID)
+			ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
-		
+		ImGui::PopStyleVar();
+
 		ImGui::Begin("Explorer");
 		ImGui::End();
-		
+
 		ImGui::Begin("Properties");
 		ImGui::End();
-		
+
 		int type = (int)m_Camera->Type;
 		int behaviour = (int)m_Camera->Behaviour;
 
@@ -283,8 +295,19 @@ namespace BrickStacker
 		m_Camera->Type = (CameraType)type;
 		m_Camera->Behaviour = (CameraBehaviour)behaviour;
 		ImGui::End();
-		
+
 		m_ImGui.EndFrame();
+
+		if (m_ViewportSize.x != 0 && m_ViewportSize.y != 0)
+			m_Camera->Aspect = m_ViewportSize.x / m_ViewportSize.y;
+		m_Camera->Update();
+
+		m_Framebuffer->Bind();
+		RenderCommand::Clear();
+		m_Renderer.Submit(m_VertexArray, m_MainShader);
+		m_Renderer.Submit(m_CubeVertexArray, m_MainShader, { .1f, 2, .5f });
+		m_Renderer.Submit(m_SkyboxVertexArray, m_MainShader, { 32, 32, 32 });
+		m_Framebuffer->Unbind();
 
 		m_Window.Update();
 	}

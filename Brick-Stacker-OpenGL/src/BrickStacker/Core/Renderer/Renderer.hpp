@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BrickStacker/Core/Core.hpp"
+
 #include "RenderCommand.hpp"
 #include "BrickStacker/Core/Renderer/Shader.hpp"
 #include "BrickStacker/Core/Scene/Camera.hpp"
@@ -21,10 +23,11 @@ namespace BrickStacker
 			return renderer;
 		}
 
-		void SetCamera(const std::shared_ptr<Camera>& camera);
+		void SetCamera(const Ref<Camera>& camera);
+
 		void EndScene();
 
-		void Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::vec3& scale = { 1, 1, 1 });
+		void Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::vec3& scale = { 1, 1, 1 });
 	private:
 		Renderer()
 		{
@@ -36,6 +39,6 @@ namespace BrickStacker
 		}
 		~Renderer() {}
 
-		std::shared_ptr<Camera> m_SceneCamera;
+		Ref<Camera> m_SceneCamera;
 	};
 }

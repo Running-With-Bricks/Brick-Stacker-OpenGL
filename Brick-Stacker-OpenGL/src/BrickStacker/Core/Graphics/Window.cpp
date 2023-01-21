@@ -46,6 +46,5 @@ namespace BrickStacker
 		m_Window->m_Height = height;
 
 		Application::Get().Draw();
-		glViewport(0, 0, m_Window->m_Width, m_Window->m_Height);
 	}
 }

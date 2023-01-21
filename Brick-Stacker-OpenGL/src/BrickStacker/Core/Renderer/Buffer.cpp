@@ -85,7 +85,7 @@ namespace BrickStacker
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
+	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
 		BS_ASSERT(vertexBuffer->GetLayout().GetElements().size() > 0, "Provided VertexBuffer has no BufferLayout!");
 
@@ -108,7 +108,7 @@ namespace BrickStacker
 		vertexBuffer->Unbind();
 	}
 
-	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
+	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(m_RendererID);
 		indexBuffer->Bind();

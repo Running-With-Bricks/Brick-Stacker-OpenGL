@@ -20,7 +20,7 @@ namespace BrickStacker
 
 		GLFWwindow* GetWindow() const { return m_Window; };
 
-		void SetTitle(std::string title)
+		void SetTitle(const std::string& title)
 		{
 			m_Title = title;
 			glfwSetWindowTitle(m_Window, m_Title.c_str());

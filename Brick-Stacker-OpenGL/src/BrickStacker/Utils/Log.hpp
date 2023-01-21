@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BrickStacker/Core/Core.hpp"
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
@@ -12,9 +14,9 @@ namespace BrickStacker
 	public:
 		static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; };
+		inline static Ref<spdlog::logger>& GetLogger() { return s_Logger; };
 	private:
-		static std::shared_ptr<spdlog::logger> s_Logger;
+		static Ref<spdlog::logger> s_Logger;
 	};
 }
 

@@ -5,6 +5,7 @@
 #include "BrickStacker/Core/Renderer/Shader.hpp"
 #include "BrickStacker/Core/Renderer/Buffer.hpp"
 #include "BrickStacker/Core/Renderer/Renderer.hpp"
+#include "BrickStacker/Core/Graphics/FrameBuffer.hpp"
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
@@ -36,13 +37,16 @@ namespace BrickStacker
 
 		Window m_Window{ 800, 600, "Brick Stacker" };
 
-		std::shared_ptr<Shader> m_MainShader;
+		Ref<Shader> m_MainShader;
 
-		std::shared_ptr<VertexArray>  m_VertexArray;
-		std::shared_ptr<VertexArray>  m_CubeVertexArray;
-		std::shared_ptr<VertexArray>  m_SkyboxVertexArray;
+		Ref<VertexArray>  m_VertexArray;
+		Ref<VertexArray>  m_CubeVertexArray;
+		Ref<VertexArray>  m_SkyboxVertexArray;
 
-		std::shared_ptr<Camera> m_Camera;
+		Ref<Camera> m_Camera;
+
+		Ref<Framebuffer> m_Framebuffer;
+		glm::vec2 m_ViewportSize{ 0, 0 };
 
 		Timer m_Timer{};
 		ImGuiLayer m_ImGui{m_Window};

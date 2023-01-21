@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BrickStacker/Core/Core.hpp"
+
 #include "glad/glad.h"
 
 #include "glm/glm.hpp"
@@ -12,6 +14,7 @@ namespace BrickStacker
 	class Shader
 	{
 	public:
+		static Ref<Shader> Create(const std::string& vertSrc, const std::string& fragSrc) { return CreateRef<Shader>(vertSrc, fragSrc); };
 		Shader(const std::string& vertSrc, const std::string& fragSrc);
 		~Shader();
 

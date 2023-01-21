@@ -2,7 +2,7 @@
 
 namespace BrickStacker
 {
-	void Renderer::SetCamera(const std::shared_ptr<Camera>& camera)
+	void Renderer::SetCamera(const Ref<Camera>& camera)
 	{
 		m_SceneCamera = camera;
 	}
@@ -12,7 +12,7 @@ namespace BrickStacker
 
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::vec3& scale)
+	void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::vec3& scale)
 	{
 		shader->Bind();
 

@@ -177,8 +177,9 @@ namespace BrickStacker
 	class VertexBuffer
 	{
 	public:
+		static Ref<VertexBuffer> Create(const std::vector<float>& verticies) { return CreateRef<VertexBuffer>(verticies); };
 		VertexBuffer(const std::vector<float>& verticies);
-		~VertexBuffer();
+		~VertexBuffer();;
 		
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; };
 		const BufferLayout& GetLayout() const { return m_Layout; };
@@ -197,7 +198,7 @@ namespace BrickStacker
 	class IndexBuffer
 	{
 	public:
-
+		static Ref<IndexBuffer> Create(const std::vector<uint32_t>& indicies) { return CreateRef<IndexBuffer>(indicies); };
 		IndexBuffer(const std::vector<uint32_t>& indicies);
 		~IndexBuffer();
 
@@ -217,21 +218,22 @@ namespace BrickStacker
 	class VertexArray
 	{
 	public:
+		static Ref<VertexArray> Create() { return CreateRef<VertexArray>(); };
 		VertexArray();
 		~VertexArray();
 
 		void Bind() const;
 		void Unbind() const;
 
-		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer);
-		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer);
+		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer);
+		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer);
 
-		const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; };
-		const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; };
+		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; };
+		const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; };
 	private:
 		uint32_t m_RendererID;
-		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
+		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+		Ref<IndexBuffer> m_IndexBuffer;
 	};
 
 }

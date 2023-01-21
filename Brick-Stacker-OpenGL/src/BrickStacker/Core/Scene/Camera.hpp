@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BrickStacker/Core/Core.hpp"
+
 #include "glm/glm.hpp"
 
 namespace BrickStacker
@@ -35,6 +37,7 @@ namespace BrickStacker
 	class Camera
 	{
 	public:
+		static Ref<Camera> Create() { return CreateRef<Camera>(); };
 		Camera() {};
 		~Camera() {};
 
