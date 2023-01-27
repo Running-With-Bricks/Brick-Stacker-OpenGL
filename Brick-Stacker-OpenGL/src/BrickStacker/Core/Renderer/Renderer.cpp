@@ -7,21 +7,15 @@ namespace BrickStacker
 		m_SceneCamera = camera;
 	}
 
-	void Renderer::EndScene()
-	{
-
-	}
-
-	void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::vec3& scale)
+	void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, int count)
 	{
 		shader->Bind();
 
-		shader->SetUniformMat4("u_Transform", glm::scale(glm::mat4{ 1 }, scale));
 		shader->SetUniformMat4("u_ViewMatrix", m_SceneCamera->GetViewMatrix());
 		shader->SetUniformMat4("u_ProjectionMatrix", m_SceneCamera->GetProjectionMatrix());
 
 		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+		RenderCommand::DrawIndexedInstanced(vertexArray, count);
 
 		shader->Unbind();
 		vertexArray->Unbind();

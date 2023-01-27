@@ -6,12 +6,10 @@ namespace BrickStacker
 	//Vertex Buffer//
 	//-------------//
 
-	VertexBuffer::VertexBuffer(const std::vector<float>& verticies)
+	VertexBuffer::VertexBuffer(const std::vector<float>& verticies, GLenum usage)
 	{
 		glGenBuffers(1, &m_RendererID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ARRAY_BUFFER, verticies.size() * sizeof(float), verticies.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		UpdateBuffer(verticies, usage);
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -26,6 +24,13 @@ namespace BrickStacker
 
 	void VertexBuffer::Unbind() const
 	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void VertexBuffer::UpdateBuffer(const std::vector<float>& verticies, GLenum usage)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+		glBufferData(GL_ARRAY_BUFFER, verticies.size() * sizeof(float), verticies.data(), usage);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
@@ -93,11 +98,19 @@ namespace BrickStacker
 		vertexBuffer->Bind();
 
 		uint32_t index = 0;
+		for (const auto& buffer : m_VertexBuffers)
+		{
+			index += (uint32_t)buffer->GetLayout().GetElements().size();
+		}
+
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout)
 		{
 			glEnableVertexAttribArray(index);
 			glVertexAttribPointer(index, element.GetComponentCount(), element.GetOpenGLType(), element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(element.Offset));
+
+			if (element.Instanced)
+				glVertexAttribDivisor(index, 1);
 
 			index++;
 		}

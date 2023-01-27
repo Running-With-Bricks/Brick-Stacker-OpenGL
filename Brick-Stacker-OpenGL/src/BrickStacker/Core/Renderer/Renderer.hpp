@@ -25,9 +25,7 @@ namespace BrickStacker
 
 		void SetCamera(const Ref<Camera>& camera);
 
-		void EndScene();
-
-		void Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::vec3& scale = { 1, 1, 1 });
+		void Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, int count);
 	private:
 		Renderer()
 		{

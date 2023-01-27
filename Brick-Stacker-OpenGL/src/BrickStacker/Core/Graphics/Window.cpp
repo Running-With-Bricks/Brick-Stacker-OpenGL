@@ -9,8 +9,8 @@ namespace BrickStacker
 	{
 		glfwInit();
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
 		//glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -23,14 +23,14 @@ namespace BrickStacker
 		glfwSetWindowUserPointer(m_Window, this);
 		glfwMakeContextCurrent(m_Window);
 
+		glfwMaximizeWindow(m_Window);
 		glfwSetFramebufferSizeCallback(m_Window, ResizeCallback);
 
 		glfwSetWindowSizeLimits(m_Window, 266, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
-		glfwSwapInterval(m_VSync);
+		glfwSwapInterval((int)m_VSync);
 
 		gladLoadGL();
-		//glEnable(GL_MULTISAMPLE);
 	}
 
 	Window::~Window()

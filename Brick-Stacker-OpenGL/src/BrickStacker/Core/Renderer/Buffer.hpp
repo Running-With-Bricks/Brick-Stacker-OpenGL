@@ -1,6 +1,8 @@
 #pragma once
 
 #include "glad/glad.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "BrickStacker/Utils/Log.hpp"
 
@@ -124,10 +126,11 @@ namespace BrickStacker
 		uint32_t Offset;
 		uint32_t Size;
 		bool Normalized;
+		bool Instanced;
 		ShaderDataType Type;
 
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-			: Name{ name }, Type{ type }, Size{ ShaderDataTypeSize(type) }, Offset{ 0 }, Normalized{ normalized }
+		BufferElement(ShaderDataType type, const std::string& name, bool instanced = false, bool normalized = false)
+			: Name{ name }, Type{ type }, Size{ ShaderDataTypeSize(type) }, Offset{ 0 }, Instanced{ instanced }, Normalized{ normalized }
 		{}
 
 		uint32_t GetComponentCount() const { return GetShaderDataTypeComponentCount(Type); };
@@ -177,10 +180,11 @@ namespace BrickStacker
 	class VertexBuffer
 	{
 	public:
-		static Ref<VertexBuffer> Create(const std::vector<float>& verticies) { return CreateRef<VertexBuffer>(verticies); };
-		VertexBuffer(const std::vector<float>& verticies);
+		static Ref<VertexBuffer> Create(const std::vector<float>& verticies, GLenum usage = GL_STATIC_DRAW) { return CreateRef<VertexBuffer>(verticies, usage); };
+		VertexBuffer(const std::vector<float>& verticies, GLenum usage = GL_STATIC_DRAW);
 		~VertexBuffer();;
 		
+		void UpdateBuffer(const std::vector<float>& verticies, GLenum usage = GL_STATIC_DRAW);
 		void SetLayout(const BufferLayout& layout) { m_Layout = layout; };
 		const BufferLayout& GetLayout() const { return m_Layout; };
 

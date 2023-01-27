@@ -25,5 +25,10 @@ namespace BrickStacker
 		{
 			glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 		}
+
+		inline static void DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, int count)
+		{
+			glDrawElementsInstanced(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr, count);
+		}
 	};
 }

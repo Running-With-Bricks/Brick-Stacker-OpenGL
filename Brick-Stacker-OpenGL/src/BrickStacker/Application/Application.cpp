@@ -14,8 +14,11 @@ namespace BrickStacker
 			#version 330 core
 			layout(location = 0) in vec3 position;
 			layout(location = 1) in vec4 color;
+			layout(location = 2) in vec4 transformCol1;
+			layout(location = 3) in vec4 transformCol2;
+			layout(location = 4) in vec4 transformCol3;
+			layout(location = 5) in vec4 transformCol4;
 
-			uniform mat4 u_Transform;
 			uniform mat4 u_ViewMatrix;
 			uniform mat4 u_ProjectionMatrix;
 
@@ -23,7 +26,13 @@ namespace BrickStacker
 
 			void main()
 			{
-				gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_Transform * vec4(position, 1.0);
+				mat4 transform;
+				transform[0] = transformCol1;
+				transform[1] = transformCol2;
+				transform[2] = transformCol3;
+				transform[3] = transformCol4;
+
+				gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
 				colour = color;
 			}
 		)";
@@ -186,35 +195,63 @@ namespace BrickStacker
 			{ ShaderDataType::Vec4, "Color" }
 		};
 
+		BufferLayout InstancedLayout =
+		{
+			{ ShaderDataType::Vec4, "Transform", true },
+			{ ShaderDataType::Vec4, "Transform", true },
+			{ ShaderDataType::Vec4, "Transform", true },
+			{ ShaderDataType::Vec4, "Transform", true },
+		};
+
 		//Creating objects which will hold cube data
-		Ref<VertexBuffer> cubeVertexBuffer;
-		Ref<IndexBuffer> cubeIndexBuffer;
+		glm::mat4 transform{ 1.0f };
+		std::vector<float> vbTransform;
+
+		transform = glm::translate(transform, { 2, 0, 1 });
+		transform = glm::scale(transform, { 1, 2, 1 });
+
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			for (uint32_t j = 0; j < 4; j++)
+			{
+				vbTransform.push_back(transform[i][j]);
+			}
+		}
+
+		BS_INFO("{0} {1} {2} {3}", transform[0].x, transform[0].y, transform[0].z, transform[0].w);
+		BS_INFO("{0} {1} {2} {3}", transform[1].x, transform[1].y, transform[1].z, transform[1].w);
+		BS_INFO("{0} {1} {2} {3}", transform[2].x, transform[2].y, transform[2].z, transform[2].w);
+		BS_INFO("{0} {1} {2} {3}", transform[3].x, transform[3].y, transform[3].z, transform[3].w);
+
+		Ref<VertexBuffer> cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
+		Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create(vbTransform, GL_STREAM_DRAW);
+		Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
 
 		m_CubeVertexArray = VertexArray::Create();
-		cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
-		cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
 
 		//Setting the layout
 		cubeVertexBuffer->SetLayout(CubeLayout);
+		cubeInstancedVertexBuffer->SetLayout(InstancedLayout);
 
 		//Binding VertexBuffer and IndexBuffer to VertexArray
 		m_CubeVertexArray->AddVertexBuffer(cubeVertexBuffer);
+		m_CubeVertexArray->AddVertexBuffer(cubeInstancedVertexBuffer);
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		//Creating objects which will hold cube data
 		Ref<VertexBuffer> skyboxVertexBuffer;
 		Ref<IndexBuffer> skyboxIndexBuffer;
 
-		m_SkyboxVertexArray = VertexArray::Create();
-		skyboxVertexBuffer = VertexBuffer::Create(SkyboxVerticies);
-		skyboxIndexBuffer = IndexBuffer::Create(SkyboxIndicies);
+		//m_SkyboxVertexArray = VertexArray::Create();
+		//skyboxVertexBuffer = VertexBuffer::Create(SkyboxVerticies);
+		//skyboxIndexBuffer = IndexBuffer::Create(SkyboxIndicies);
 
 		//Setting the layout
-		skyboxVertexBuffer->SetLayout(CubeLayout);
+		//skyboxVertexBuffer->SetLayout(CubeLayout);
 
 		//Binding VertexBuffer and IndexBuffer to VertexArray
-		m_SkyboxVertexArray->AddVertexBuffer(skyboxVertexBuffer);
-		m_SkyboxVertexArray->SetIndexBuffer(skyboxIndexBuffer);
+		//m_SkyboxVertexArray->AddVertexBuffer(skyboxVertexBuffer);
+		//m_SkyboxVertexArray->SetIndexBuffer(skyboxIndexBuffer);
 
 		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 0, -2 };
@@ -304,9 +341,9 @@ namespace BrickStacker
 
 		m_Framebuffer->Bind();
 		RenderCommand::Clear();
-		m_Renderer.Submit(m_VertexArray, m_MainShader);
-		m_Renderer.Submit(m_CubeVertexArray, m_MainShader, { .1f, 2, .5f });
-		m_Renderer.Submit(m_SkyboxVertexArray, m_MainShader, { 32, 32, 32 });
+		m_Renderer.Submit(m_VertexArray, m_MainShader, 1);
+		m_Renderer.Submit(m_CubeVertexArray, m_MainShader, 1);
+		//m_Renderer.Submit(m_SkyboxVertexArray, m_MainShader, { 32, 32, 32 });
 		m_Framebuffer->Unbind();
 
 		m_Window.Update();
