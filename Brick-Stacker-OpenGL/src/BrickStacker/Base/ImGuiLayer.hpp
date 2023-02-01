@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGui/imgui.h"
+#include "ImGui/imgui_stdlib.h"
 #include "ImGui/backends/imgui_impl_glfw.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 
@@ -36,6 +37,11 @@ namespace BrickStacker
 				ImGui::RenderPlatformWindowsDefault();
 				glfwMakeContextCurrent(backup_current_context);
 			}
+		}
+
+		ImGuiIO* GetIO()
+		{
+			return m_IO;
 		}
 
 	private:

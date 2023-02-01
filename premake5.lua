@@ -60,7 +60,10 @@ project "Brick-Stacker-OpenGL"
 
 		postbuildcommands
 		{
-			("copy \"%{wks.location}vendor\\DiscordGameSDK\\lib\\x86_64\\discord_game_sdk.dll\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\discord_game_sdk.dll\"")
+			("{COPYFILE} \"%{wks.location}vendor\\DiscordGameSDK\\lib\\x86_64\\discord_game_sdk.dll\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\discord_game_sdk.dll\""),
+			("{COPYFILE} \"%{prj.location}default.ini" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\default.ini\""),
+			("{COPYDIR} \"%{prj.location}assets\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\assets\""),
+			("{COPYDIR} \"%{prj.location}shaders\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\shaders\"")
 		}
 
 	filter "configurations:Debug"

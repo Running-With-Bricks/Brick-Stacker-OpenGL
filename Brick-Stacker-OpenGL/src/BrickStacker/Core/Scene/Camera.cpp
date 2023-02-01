@@ -7,8 +7,8 @@ namespace BrickStacker
 		Planes = planes;
 
 		m_ProjectionMatrix = glm::mat4{ 1.0f };
-		m_ProjectionMatrix[0][0] = 2.f / (Planes.Right - Planes.Left);
-		m_ProjectionMatrix[1][1] = 2.f / (Planes.Bottom - Planes.Top);
+		m_ProjectionMatrix[0][0] = 2.f / (Planes.Right - Planes.Left) * Zoom;
+		m_ProjectionMatrix[1][1] = 2.f / (Planes.Bottom - Planes.Top) * Zoom;
 		m_ProjectionMatrix[2][2] = 1.f / (Planes.Far - Planes.Near);
 		m_ProjectionMatrix[3][0] = -(Planes.Right + Planes.Left) / (Planes.Right - Planes.Left);
 		m_ProjectionMatrix[3][1] = -(Planes.Bottom + Planes.Top) / (Planes.Bottom - Planes.Top);

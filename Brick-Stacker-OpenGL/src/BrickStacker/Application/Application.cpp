@@ -14,10 +14,10 @@ namespace BrickStacker
 			#version 330 core
 			layout(location = 0) in vec3 position;
 			layout(location = 1) in vec4 color;
-			layout(location = 2) in vec4 transformCol1;
-			layout(location = 3) in vec4 transformCol2;
-			layout(location = 4) in vec4 transformCol3;
-			layout(location = 5) in vec4 transformCol4;
+			layout(location = 2) in vec3 transformCol1;
+			layout(location = 3) in vec3 transformCol2;
+			layout(location = 4) in vec3 transformCol3;
+			layout(location = 5) in vec3 transformCol4;
 
 			uniform mat4 u_ViewMatrix;
 			uniform mat4 u_ProjectionMatrix;
@@ -27,10 +27,10 @@ namespace BrickStacker
 			void main()
 			{
 				mat4 transform;
-				transform[0] = transformCol1;
-				transform[1] = transformCol2;
-				transform[2] = transformCol3;
-				transform[3] = transformCol4;
+				transform[0] = vec4(transformCol1, 0);
+				transform[1] = vec4(transformCol2, 0);
+				transform[2] = vec4(transformCol3, 0);
+				transform[3] = vec4(transformCol4, 1);
 
 				gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
 				colour = color;
@@ -51,61 +51,39 @@ namespace BrickStacker
 
 		m_MainShader = Shader::Create(vertCode, fragCode);
 
-		m_VertexArray = VertexArray::Create();
-		
-		Ref<VertexBuffer> vertexBuffer;
-		Ref<IndexBuffer> indexBuffer;
-
-		vertexBuffer = VertexBuffer::Create({
-			-0.5f, 0.5f, 0, 1, 0, 0, 1,
-			0.5f, 0.5f, 0,  0, 1, 0, 1,
-			0, -0.5f, 0,    0, 0, 1, 1,
-			});
-		BufferLayout layout =
-		{
-			{ ShaderDataType::Vec3, "position" },
-			{ ShaderDataType::Vec4, "color" }
-		};
-		vertexBuffer->SetLayout(layout);
-		
-		indexBuffer = IndexBuffer::Create({ 0, 1, 2 });
-		
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-
 		//Cube Verts
 		std::vector<float> CubeVerticies =
 		{
 		//Top
-			-0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
+			-0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
 		//Bottom
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 		//Left
-			-0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			-0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
 		//Right
-			 0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
 		//Front
-			 0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f,  0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
 		//Back
-			 0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			-0.5f,  0.5f,  0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
 		};
 
 		//Cube Indicies
@@ -130,101 +108,27 @@ namespace BrickStacker
 			23, 20, 22,
 		};
 
-		//Skybox Verts
-		std::vector<float> SkyboxVerticies =
-		{
-		//Top
-			-0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			 0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			 0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-			-0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-		//Bottom
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-		//Left
-			-0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			-0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-		//Right
-			 0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			 0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-		//Front
-			 0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-			-0.5f,  0.5f, -0.5f,  .1f, .14f, .9f, 1,
-			-0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f, -0.5f,  1, 1, 1, 1,
-		//Back
-			 0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			-0.5f,  0.5f,  0.5f,  .1f, .14f, .9f, 1,
-			-0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-			 0.5f, -0.5f,  0.5f,  1, 1, 1, 1,
-		};
-
-		//Skybox Indicies
-		std::vector<uint32_t> SkyboxIndicies =
-		{
-			0, 2, 1,
-			2, 0, 3,
-
-			5, 6, 4,
-			7, 4, 6,
-
-			8, 10, 9,
-			10, 8, 11,
-
-			13, 14, 12,
-			15, 12, 14,
-
-			17, 18, 16,
-			19, 16, 18,
-
-			20, 22, 21,
-			22, 20, 23,
-		};
 
 		//Specifying Vertex properties
 		//Vec3 of floats for the position and Vec4 of floats for Color
 		BufferLayout CubeLayout =
 		{
 			{ ShaderDataType::Vec3, "Position" },
-			{ ShaderDataType::Vec4, "Color" }
 		};
 
 		BufferLayout InstancedLayout =
 		{
-			{ ShaderDataType::Vec4, "Transform", true },
-			{ ShaderDataType::Vec4, "Transform", true },
-			{ ShaderDataType::Vec4, "Transform", true },
-			{ ShaderDataType::Vec4, "Transform", true },
+			{ ShaderDataType::Vec4, "Color", true },
+			{ ShaderDataType::Vec3, "Transform", true },
+			{ ShaderDataType::Vec3, "Transform", true },
+			{ ShaderDataType::Vec3, "Transform", true },
+			{ ShaderDataType::Vec3, "Transform", true },
 		};
 
 		//Creating objects which will hold cube data
-		glm::mat4 transform{ 1.0f };
-		std::vector<float> vbTransform;
-
-		transform = glm::translate(transform, { 2, 0, 1 });
-		transform = glm::scale(transform, { 1, 2, 1 });
-
-		for (uint32_t i = 0; i < 4; i++)
-		{
-			for (uint32_t j = 0; j < 4; j++)
-			{
-				vbTransform.push_back(transform[i][j]);
-			}
-		}
-
-		BS_INFO("{0} {1} {2} {3}", transform[0].x, transform[0].y, transform[0].z, transform[0].w);
-		BS_INFO("{0} {1} {2} {3}", transform[1].x, transform[1].y, transform[1].z, transform[1].w);
-		BS_INFO("{0} {1} {2} {3}", transform[2].x, transform[2].y, transform[2].z, transform[2].w);
-		BS_INFO("{0} {1} {2} {3}", transform[3].x, transform[3].y, transform[3].z, transform[3].w);
 
 		Ref<VertexBuffer> cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
-		Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create(vbTransform, GL_STREAM_DRAW);
+		Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create({}, GL_STREAM_DRAW);
 		Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
 
 		m_CubeVertexArray = VertexArray::Create();
@@ -238,20 +142,6 @@ namespace BrickStacker
 		m_CubeVertexArray->AddVertexBuffer(cubeInstancedVertexBuffer);
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
-		//Creating objects which will hold cube data
-		Ref<VertexBuffer> skyboxVertexBuffer;
-		Ref<IndexBuffer> skyboxIndexBuffer;
-
-		//m_SkyboxVertexArray = VertexArray::Create();
-		//skyboxVertexBuffer = VertexBuffer::Create(SkyboxVerticies);
-		//skyboxIndexBuffer = IndexBuffer::Create(SkyboxIndicies);
-
-		//Setting the layout
-		//skyboxVertexBuffer->SetLayout(CubeLayout);
-
-		//Binding VertexBuffer and IndexBuffer to VertexArray
-		//m_SkyboxVertexArray->AddVertexBuffer(skyboxVertexBuffer);
-		//m_SkyboxVertexArray->SetIndexBuffer(skyboxIndexBuffer);
 
 		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 0, -2 };
@@ -259,7 +149,7 @@ namespace BrickStacker
 		FramebufferSpecifications fbSpecs;
 		fbSpecs.Width = 1024;
 		fbSpecs.Height = 1024;
-		m_Framebuffer = Framebuffer::Create(fbSpecs); //New
+		m_Framebuffer = Framebuffer::Create(fbSpecs);
 	}
 
 	Application::~Application()
@@ -284,16 +174,114 @@ namespace BrickStacker
 		{
 			m_Discord.Update();
 
+			m_Timer.Reset();
 			Draw();
+			m_Timer.Stop();
+
+			m_Window.Update();
 		}
+
+		ImGui::SaveIniSettingsToDisk("imgui.ini");
+	}
+
+	 void Application::updateBricksInstancedData()
+	{
+		std::vector<float> instancedData;
+
+		for (size_t i = 0; i < m_Bricks.size(); i++)
+		{
+			const auto& brick = m_Bricks[i];
+
+			const float x{ glm::radians(brick->Rotation.x) }, y{ glm::radians(brick->Rotation.y) }, z{ glm::radians(brick->Rotation.z) };
+			const float c3 = glm::cos(z);
+			const float s3 = glm::sin(z);
+			const float c2 = glm::cos(x);
+			const float s2 = glm::sin(x);
+			const float c1 = glm::cos(y);
+			const float s1 = glm::sin(y);
+			glm::mat4 brickMatrix = glm::mat4{
+			{
+				brick->Scale.x * (c1 * c3 + s1 * s2 * s3),
+				brick->Scale.x * (c2 * s3),
+				brick->Scale.x * (c1 * s2 * s3 - c3 * s1),
+				0.0f,
+			},
+			{
+				brick->Scale.y * (c3 * s1 * s2 - c1 * s3),
+				brick->Scale.y * (c2 * c3),
+				brick->Scale.y * (c1 * c3 * s2 + s1 * s3),
+				0.0f,
+			},
+			{
+				brick->Scale.z * (c2 * s1),
+				brick->Scale.z * (-s2),
+				brick->Scale.z * (c1 * c2),
+				0.0f,
+			},
+			{brick->Position.x, brick->Position.y, brick->Position.z, 1.0f} };
+
+			for (size_t x = 0; x < 4; x++)
+			{
+				instancedData.push_back(brick->Color[x]);
+			}
+			for (size_t x = 0; x < 4; x++)
+			{
+				for (size_t y = 0; y < 3; y++)
+				{
+					instancedData.push_back(brickMatrix[x][y]);
+				}
+			}
+		}
+
+		m_CubeVertexArray->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
 	}
 
 	void Application::Draw()
 	{
+		updateBricksInstancedData();
+
 		RenderCommand::Clear();
+
+		static bool updateFontSize = false;
+		static int fontSize = 14;
+
+		if (updateFontSize)
+		{
+			m_ImGui.GetIO()->Fonts->Clear();
+			m_ImGui.GetIO()->Fonts->AddFontFromFileTTF("assets/fonts/e-UkraineHead-Regular.otf", fontSize);
+			ImGui_ImplOpenGL3_CreateFontsTexture();
+		}
+
+		updateFontSize = false;
 
 		m_ImGui.BeginFrame();
 		ImGui::DockSpaceOverViewport();
+
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New", "Ctrl+N")) {}
+				if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
+				if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {}  // Disabled item
+				ImGui::Separator();
+				if (ImGui::MenuItem("Add Brick", "Shift+A")) { m_Bricks.push_back(Brick::Create()); }
+				ImGui::Separator();
+				if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
+				if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
+				if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
+				if (ImGui::MenuItem("Delete", "Del")) {}
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
+		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
@@ -313,21 +301,73 @@ namespace BrickStacker
 		ImGui::PopStyleVar();
 
 		ImGui::Begin("Explorer");
+
+		for (size_t i = 0; i < m_Bricks.size(); i++)
+		{
+			auto& brick = m_Bricks[i];
+
+			ImGui::PushID(brick->ID);
+
+			if (ImGui::TreeNodeEx(brick->Name.c_str(), (m_SelectedBrick == brick ? ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf))
+			{
+				if (ImGui::IsItemClicked())
+				{
+					m_SelectedBrick = brick;
+				}
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
+		}
 		ImGui::End();
 
 		ImGui::Begin("Properties");
+		if (m_SelectedBrick)
+		{
+			ImGui::InputText("Name", &m_SelectedBrick->Name);
+			ImGui::DragFloat3("Position", &m_SelectedBrick->Position.x, .1f);
+			ImGui::DragFloat3("Rotation", &m_SelectedBrick->Rotation.x, .5f);
+			ImGui::DragFloat3("Scale", &m_SelectedBrick->Scale.x, .1f);
+			ImGui::ColorEdit4("Color", &m_SelectedBrick->Color.x);
+		}
 		ImGui::End();
 
 		int type = (int)m_Camera->Type;
 		int behaviour = (int)m_Camera->Behaviour;
 
 		ImGui::Begin("Debug");
+
+		const float FPS = 1 / m_Timer.Elapsed();
+		static float lowestFPS = 1000;
+		static float highestFPS = 0;
+		static float FPSSum = 0;
+		static float FPSCount = 0;
+		lowestFPS = (lowestFPS > FPS && FPS > 10 ? FPS : lowestFPS);
+		highestFPS = (highestFPS < FPS ? FPS : highestFPS);
+		FPSSum += FPS;
+		FPSCount++;
+
+		ImGui::Text("FPS: %.1f", FPS);
+		ImGui::Text("Average FPS: %.1f", FPSSum / FPSCount);
+		ImGui::Text("Min FPS: %.1f", lowestFPS);
+		ImGui::Text("Max FPS: %.1f", highestFPS);
+
 		ImGui::Combo("CamType", &type, "Perspective\0Orthographic\0\0");
 		ImGui::Combo("CamBehaviour", &behaviour, "None\0Free\0Orbit\0\0");
-		ImGui::DragFloat("CamFOV", &m_Camera->FOV, .1f, 0.1f, 120);
+		ImGui::DragFloat("CamFOV", &m_Camera->FOV, .1f, 0.1f, 120, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+		ImGui::DragFloat("CamZoom", &m_Camera->Zoom, .1f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 		ImGui::DragFloat3("CamPos", &m_Camera->Position.x, .1f);
 		ImGui::DragFloat3("CamRot", &m_Camera->Rotation.x, .5f);
 		ImGui::DragFloat3("CamTar", &m_Camera->TargetPos.x, .1f);
+
+		ImGui::Separator();
+
+		static int fontsize = fontSize;
+		ImGui::DragInt("Font Size", &fontsize, .25f, 4, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);
+		if (ImGui::IsItemDeactivated())
+		{
+			updateFontSize = true;
+			fontSize = fontsize;
+		}
 
 		m_Camera->Type = (CameraType)type;
 		m_Camera->Behaviour = (CameraBehaviour)behaviour;
@@ -336,16 +376,17 @@ namespace BrickStacker
 		m_ImGui.EndFrame();
 
 		if (m_ViewportSize.x != 0 && m_ViewportSize.y != 0)
+		{
 			m_Camera->Aspect = m_ViewportSize.x / m_ViewportSize.y;
+			m_Camera->Planes = { -m_Camera->Aspect, m_Camera->Aspect, -1, 1, m_Camera->Planes.Near, m_Camera->Planes.Far };
+		}
+			
 		m_Camera->Update();
 
 		m_Framebuffer->Bind();
 		RenderCommand::Clear();
-		m_Renderer.Submit(m_VertexArray, m_MainShader, 1);
-		m_Renderer.Submit(m_CubeVertexArray, m_MainShader, 1);
-		//m_Renderer.Submit(m_SkyboxVertexArray, m_MainShader, { 32, 32, 32 });
+		if (m_Bricks.size())
+			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, m_Bricks.size());
 		m_Framebuffer->Unbind();
-
-		m_Window.Update();
 	}
 }

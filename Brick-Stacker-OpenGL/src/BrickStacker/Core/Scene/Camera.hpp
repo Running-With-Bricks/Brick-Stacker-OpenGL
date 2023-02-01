@@ -31,7 +31,7 @@ namespace BrickStacker
 		float Far{ 128 };
 
 		FrustumPlanes() = default;
-		FrustumPlanes(float left, float right, float top, float bottom, float near, float far);
+		FrustumPlanes(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane);
 	};
 
 	class Camera
@@ -42,7 +42,7 @@ namespace BrickStacker
 		~Camera() {};
 
 		void SetOrthographicProjection(FrustumPlanes planes);
-		void SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
+		void SetOrthographicProjection(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane);
 
 		void SetPerspectiveProjection(float fovy, float aspect, float near, float far);
 
@@ -63,6 +63,7 @@ namespace BrickStacker
 		glm::vec3 Position{};
 		glm::vec3 Rotation{};
 		glm::vec3 TargetPos{};
+		float Zoom = 1;
 		FrustumPlanes Planes{};
 
 	private:

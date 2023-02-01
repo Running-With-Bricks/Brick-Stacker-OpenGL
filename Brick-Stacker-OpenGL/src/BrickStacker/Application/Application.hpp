@@ -11,10 +11,36 @@
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
 #include "BrickStacker/Utils/Timer.hpp"
 
+#include <string>
 #include <memory>
 
 namespace BrickStacker
 {
+	class Brick
+	{
+	public:
+		static Ref<Brick> Create(const std::string& name = "New Brick")
+		{ 
+			static uint32_t prevID{ 0 };
+			prevID++;
+			return CreateRef<Brick>(name, prevID);
+		}
+		Brick(const std::string& name, uint32_t ID)
+			: ID{ ID }
+		{
+			Name = name;
+		}
+
+		const uint32_t ID;
+		std::string Name = "Brick";
+		glm::vec3 Position{ 0 };
+		glm::vec3 Rotation{ 0 };
+		glm::vec3 Scale{ 1 };
+		glm::vec4 Color{ 1 };
+	};
+
+
+
 	class Application
 	{
 	public:
@@ -35,13 +61,13 @@ namespace BrickStacker
 		Application();
 		~Application();
 
+		void updateBricksInstancedData();
+
 		Window m_Window{ 800, 600, "Brick Stacker" };
 
 		Ref<Shader> m_MainShader;
 
-		Ref<VertexArray>  m_VertexArray;
 		Ref<VertexArray>  m_CubeVertexArray;
-		Ref<VertexArray>  m_SkyboxVertexArray;
 
 		Ref<Camera> m_Camera;
 
@@ -52,5 +78,8 @@ namespace BrickStacker
 		ImGuiLayer m_ImGui{m_Window};
 		Discord& m_Discord = Discord::Get();
 		Renderer& m_Renderer = Renderer::Get();
+
+		std::vector<Ref<Brick>> m_Bricks;
+		Ref<Brick> m_SelectedBrick;
 	};
 }

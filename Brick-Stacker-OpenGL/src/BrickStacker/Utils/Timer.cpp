@@ -14,11 +14,20 @@ namespace BrickStacker
 
 	void Timer::Reset()
 	{
+		m_ElapsedTime = 0;
 		m_Start = std::chrono::high_resolution_clock::now();
+	}
+
+	void Timer::Stop()
+	{
+		m_ElapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_Start).count() * 0.001f * 0.001f * 0.001f;
 	}
 
 	float Timer::Elapsed()
 	{
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_Start).count() * 0.001f * 0.001f * 0.001f;
+		if (!m_ElapsedTime)
+			Stop();
+
+		return m_ElapsedTime;
 	}
 }
