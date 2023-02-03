@@ -1,4 +1,5 @@
 #pragma once
+#include "pch.hpp"
 
 #include "BrickStacker/Core/Graphics/Window.hpp"
 
@@ -9,10 +10,6 @@
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
-#include "BrickStacker/Utils/Timer.hpp"
-
-#include <string>
-#include <memory>
 
 namespace BrickStacker
 {

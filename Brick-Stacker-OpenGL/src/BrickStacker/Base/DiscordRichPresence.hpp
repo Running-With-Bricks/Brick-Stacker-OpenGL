@@ -1,4 +1,5 @@
 #pragma once
+#include "pch.hpp"
 
 #include "DiscordGameSDK/discord.h"
 

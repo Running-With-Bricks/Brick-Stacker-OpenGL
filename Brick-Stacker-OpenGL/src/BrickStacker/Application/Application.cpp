@@ -1,10 +1,5 @@
+#include "pch.hpp"
 #include "Application.hpp"
-
-#include "BrickStacker/Utils/Log.hpp"
-
-#include "ImGui/imgui.h"
-#include "ImGui/backends/imgui_impl_glfw.h"
-#include "ImGui/backends/imgui_impl_opengl3.h"
 
 namespace BrickStacker
 {
@@ -13,16 +8,18 @@ namespace BrickStacker
 		const char* vertCode = R"(
 			#version 330 core
 			layout(location = 0) in vec3 position;
-			layout(location = 1) in vec4 color;
-			layout(location = 2) in vec3 transformCol1;
-			layout(location = 3) in vec3 transformCol2;
-			layout(location = 4) in vec3 transformCol3;
-			layout(location = 5) in vec3 transformCol4;
+			layout(location = 1) in vec2 texCoord;
+			layout(location = 2) in vec4 color;
+			layout(location = 3) in vec3 transformCol1;
+			layout(location = 4) in vec3 transformCol2;
+			layout(location = 5) in vec3 transformCol3;
+			layout(location = 6) in vec3 transformCol4;
 
 			uniform mat4 u_ViewMatrix;
 			uniform mat4 u_ProjectionMatrix;
 
 			out vec4 colour;
+			out vec2 texCoords;
 
 			void main()
 			{
@@ -34,6 +31,7 @@ namespace BrickStacker
 
 				gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
 				colour = color;
+				texCoords = texCoord;
 			}
 		)";
 
@@ -41,11 +39,12 @@ namespace BrickStacker
 			#version 330 core
 
 			in vec4 colour;
+			in vec2 texCoords;
 
 			out vec4 FragColor;
 			void main()
 			{
-				FragColor = colour;
+				FragColor = vec4(texCoords, 0.0, 1.0);
 			}
 		)";
 
@@ -55,35 +54,35 @@ namespace BrickStacker
 		std::vector<float> CubeVerticies =
 		{
 		//Top
-			-0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
 		//Bottom
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
 		//Left
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
 		//Right
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
 		//Front
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 		//Back
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
 		};
 
 		//Cube Indicies
@@ -114,6 +113,7 @@ namespace BrickStacker
 		BufferLayout CubeLayout =
 		{
 			{ ShaderDataType::Vec3, "Position" },
+			{ ShaderDataType::Vec2, "TexCoord" }
 		};
 
 		BufferLayout InstancedLayout =
@@ -159,7 +159,7 @@ namespace BrickStacker
 
 	void Application::Run()
 	{
-		RenderCommand::SetClearColor({ 0.1f, 0.12f, 0.2f, 1 });
+		RenderCommand::SetClearColor({ 1, 1, 1, 1 });
 		RenderCommand::Clear();
 
 		m_Window.Update();

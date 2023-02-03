@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BrickStacker/Core/Core.hpp"
+#include "pch.hpp"
 
 #include "glm/glm.hpp"
 

@@ -1,8 +1,5 @@
+#include "pch.hpp"
 #include "Shader.hpp"
-
-#include "BrickStacker/Utils/Log.hpp"
-
-#include <vector>
 
 namespace BrickStacker
 {

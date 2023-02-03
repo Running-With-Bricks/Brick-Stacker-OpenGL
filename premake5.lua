@@ -18,6 +18,9 @@ project "Brick-Stacker-OpenGL"
 
 	targetdir ("bin/%{prj.name}/" .. outputDir)
 	objdir ("bin-obj/%{prj.name}/" .. outputDir)
+	
+	pchheader "pch.hpp"
+	pchsource "%{prj.location}/src/pch.cpp"
 
 	files
 	{
@@ -25,6 +28,7 @@ project "Brick-Stacker-OpenGL"
 		"%{prj.location}/src/**.h",
 		"%{prj.location}/src/**.cpp",
 		"%{prj.location}/src/**.hpp",
+		"%{wks.location}/vendor/stb_image/stb_image.cpp",
 	}
 
 	includedirs
@@ -32,8 +36,18 @@ project "Brick-Stacker-OpenGL"
 		"%{prj.location}/src",
 		"%{wks.location}/vendor/glad/include",
 		"%{wks.location}/vendor/glfw/include",
-		"%{wks.location}/vendor/spdlog/include/",
-		"%{wks.location}/dependancies/glm/include/",
+		"%{wks.location}/vendor/spdlog/include",
+		"%{wks.location}/vendor/stb_image/include",
+		"%{wks.location}/vendor/DiscordGameSDK/include",
+		"%{wks.location}/vendor/ImGui/include",
+		"%{wks.location}/dependancies/glm/include"
+	}
+
+	links
+	{
+		"glad",
+		"DiscordGameSDK",
+		"ImGui"
 	}
 
 	libdirs
@@ -60,10 +74,10 @@ project "Brick-Stacker-OpenGL"
 
 		postbuildcommands
 		{
-			("{COPYFILE} \"%{wks.location}vendor\\DiscordGameSDK\\lib\\x86_64\\discord_game_sdk.dll\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\discord_game_sdk.dll\""),
-			("{COPYFILE} \"%{prj.location}default.ini" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\default.ini\""),
-			("{COPYDIR} \"%{prj.location}assets\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\assets\""),
-			("{COPYDIR} \"%{prj.location}shaders\" \"%{wks.location}bin\\%{prj.name}\\"..outputDir.."\\shaders\"")
+			("{COPYFILE} \"%{wks.location}vendor/DiscordGameSDK/lib/x86_64/discord_game_sdk.dll\" \"%{wks.location}bin/%{prj.name}/"..outputDir.."/discord_game_sdk.dll\""),
+			("{COPYFILE} \"%{prj.location}default.ini\" \"%{wks.location}bin/%{prj.name}/"..outputDir.."/default.ini\""),
+			("{COPYDIR} \"%{prj.location}assets\" \"%{wks.location}bin/%{prj.name}/"..outputDir.."/assets\""),
+			("{COPYDIR} \"%{prj.location}shaders\" \"%{wks.location}bin/%{prj.name}/"..outputDir.."/shaders\"")
 		}
 
 	filter "configurations:Debug"

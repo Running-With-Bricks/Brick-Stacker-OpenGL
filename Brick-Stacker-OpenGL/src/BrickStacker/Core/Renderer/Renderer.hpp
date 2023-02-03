@@ -1,13 +1,9 @@
 #pragma once
-
-#include "BrickStacker/Core/Core.hpp"
+#include "pch.hpp"
 
 #include "RenderCommand.hpp"
 #include "BrickStacker/Core/Renderer/Shader.hpp"
 #include "BrickStacker/Core/Scene/Camera.hpp"
-
-#include <memory>
-#include <vector>
 
 namespace BrickStacker
 {

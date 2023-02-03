@@ -1,6 +1,5 @@
+#include "pch.hpp"
 #include "DiscordRichPresence.hpp"
-
-#include <chrono>
 
 namespace BrickStacker
 {

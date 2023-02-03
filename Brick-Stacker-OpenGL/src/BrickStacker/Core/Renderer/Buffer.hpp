@@ -1,14 +1,10 @@
 #pragma once
+#include "pch.hpp"
 
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "BrickStacker/Utils/Log.hpp"
-
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace BrickStacker
 {

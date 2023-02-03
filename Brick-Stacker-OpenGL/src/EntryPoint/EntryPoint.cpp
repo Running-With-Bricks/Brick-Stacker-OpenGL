@@ -1,3 +1,5 @@
+#include "pch.hpp"
+
 #include "BrickStacker/Application/Application.hpp"
 #include "BrickStacker/Utils/Log.hpp"
 

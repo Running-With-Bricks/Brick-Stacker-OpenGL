@@ -1,10 +1,7 @@
 #pragma once
-
-#include "BrickStacker/Core/Core.hpp"
+#include "pch.hpp"
 
 #include "glad/glad.h"
-
-#include <stdint.h>
 
 namespace BrickStacker
 {
