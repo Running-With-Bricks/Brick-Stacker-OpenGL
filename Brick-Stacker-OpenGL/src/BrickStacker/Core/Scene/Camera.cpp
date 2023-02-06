@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Camera.hpp"
 
 namespace BrickStacker
@@ -15,20 +16,20 @@ namespace BrickStacker
 		m_ProjectionMatrix[3][2] = -Planes.Near / (Planes.Far - Planes.Near);
 	}
 
-	void Camera::SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far)
+	void Camera::SetOrthographicProjection(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane)
 	{
-		FrustumPlanes newPlanes{ left, right, top, bottom, near, far };
+		FrustumPlanes newPlanes{ leftPlane, rightPlane, topPlane, bottomPlane, nearPlane, farPlane };
 
 		SetOrthographicProjection(newPlanes);
 	}
 
-	void Camera::SetPerspectiveProjection(float fov, float aspect, float near, float far)
+	void Camera::SetPerspectiveProjection(float fov, float aspect, float nearPlane, float farPlane)
 	{
 		Aspect = aspect;
 		FOV = fov;
 
-		Planes.Near = near;
-		Planes.Far = far;
+		Planes.Near = nearPlane;
+		Planes.Far = farPlane;
 
 		fov = glm::radians(FOV);
 		assert(glm::abs(Aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
@@ -125,15 +126,15 @@ namespace BrickStacker
 		}
 	}
 
-	FrustumPlanes::FrustumPlanes(float left, float right, float top, float bottom, float near, float far)
+	FrustumPlanes::FrustumPlanes(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane)
 	{
-		Left = left;
-		Right = right;
+		Left = leftPlane;
+		Right = rightPlane;
 
-		Top = top;
-		Bottom = bottom;
+		Top = topPlane;
+		Bottom = bottomPlane;
 
-		Near = near;
-		Far = far;
+		Near = nearPlane;
+		Far = farPlane;
 	}
 }
