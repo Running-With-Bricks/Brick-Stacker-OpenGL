@@ -9,12 +9,14 @@ workspace "Brick-Stacker-OpenGL"
 		"Distribute"
 	}
 
+	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+	include "vendor/premake5.lua"
+
 project "Brick-Stacker-OpenGL"
 	location "Brick-Stacker-OpenGL"
 	kind "ConsoleApp"
 	language "C++"
-
-	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 	targetdir ("bin/%{prj.name}/" .. outputDir)
 	objdir ("bin-obj/%{prj.name}/" .. outputDir)

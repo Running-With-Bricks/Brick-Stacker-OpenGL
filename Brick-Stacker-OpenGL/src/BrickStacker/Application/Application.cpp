@@ -323,7 +323,7 @@ namespace BrickStacker
 		ImGui::Begin("Properties");
 		if (m_SelectedBrick)
 		{
-			ImGui::InputText("Name", &m_SelectedBrick->Name);
+			//ImGui::InputText("Name", &m_SelectedBrick->Name);
 			ImGui::DragFloat3("Position", &m_SelectedBrick->Position.x, .1f);
 			ImGui::DragFloat3("Rotation", &m_SelectedBrick->Rotation.x, .5f);
 			ImGui::DragFloat3("Scale", &m_SelectedBrick->Scale.x, .1f);
