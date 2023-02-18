@@ -18,6 +18,8 @@ namespace BrickStacker
 		void Bind() const;
 		void Unbind() const;
 
+		uint32_t GetRendererID() { return m_RendererID; };
+
 		void SetUniformMat4(const std::string& name, const glm::mat4& matrix) const;
 	private:
 		uint32_t m_RendererID;

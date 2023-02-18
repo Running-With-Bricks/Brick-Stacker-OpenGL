@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Renderer.hpp"
 
 namespace BrickStacker

@@ -28,7 +28,7 @@ namespace BrickStacker
 		float Bottom{ 1 };
 
 		float Near{ .1f };
-		float Far{ 128 };
+		float Far{ 1024 };
 
 		FrustumPlanes() = default;
 		FrustumPlanes(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane);

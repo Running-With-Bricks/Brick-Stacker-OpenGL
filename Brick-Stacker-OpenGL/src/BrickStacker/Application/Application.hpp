@@ -4,6 +4,7 @@
 #include "BrickStacker/Core/Graphics/Window.hpp"
 
 #include "BrickStacker/Core/Renderer/Shader.hpp"
+#include "BrickStacker/Core/Graphics/Texture.hpp"
 #include "BrickStacker/Core/Renderer/Buffer.hpp"
 #include "BrickStacker/Core/Renderer/Renderer.hpp"
 #include "BrickStacker/Core/Graphics/FrameBuffer.hpp"
@@ -34,6 +35,7 @@ namespace BrickStacker
 		glm::vec3 Rotation{ 0 };
 		glm::vec3 Scale{ 1 };
 		glm::vec4 Color{ 1 };
+		bool Visible = true;
 	};
 
 
@@ -64,12 +66,17 @@ namespace BrickStacker
 
 		Ref<Shader> m_MainShader;
 
+		Ref<Texture2D> m_Texture;
+		Ref<Texture2D> m_Texture2;
+
 		Ref<VertexArray>  m_CubeVertexArray;
 
 		Ref<Camera> m_Camera;
 
 		Ref<Framebuffer> m_Framebuffer;
-		glm::vec2 m_ViewportSize{ 0, 0 };
+		glm::vec2 m_ViewportSize{ 1920, 1080 };
+
+		float m_LoadTime;
 
 		Timer m_Timer{};
 		ImGuiLayer m_ImGui{m_Window};
@@ -77,6 +84,7 @@ namespace BrickStacker
 		Renderer& m_Renderer = Renderer::Get();
 
 		std::vector<Ref<Brick>> m_Bricks;
+		std::vector<Ref<Brick>> m_SortedBricks;
 		Ref<Brick> m_SelectedBrick;
 	};
 }

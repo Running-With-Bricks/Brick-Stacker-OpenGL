@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Log.hpp"
 
 namespace BrickStacker

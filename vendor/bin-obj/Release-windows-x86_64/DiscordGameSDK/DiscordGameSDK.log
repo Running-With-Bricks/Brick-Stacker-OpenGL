@@ -1,0 +1,16 @@
+﻿  achievement_manager.cpp
+  activity_manager.cpp
+  application_manager.cpp
+  core.cpp
+  image_manager.cpp
+  lobby_manager.cpp
+  network_manager.cpp
+  overlay_manager.cpp
+  relationship_manager.cpp
+  storage_manager.cpp
+  store_manager.cpp
+  types.cpp
+  user_manager.cpp
+  voice_manager.cpp
+  Generating Code...
+  DiscordGameSDK.vcxproj -> C:\Programming\My C++ Projects\Brick-Stacker-OpenGL\vendor\bin\Release-windows-x86_64\DiscordGameSDK\DiscordGameSDK.lib

@@ -1,3 +1,4 @@
+#include "pch.hpp"
 #include "Window.hpp"
 
 #include "BrickStacker/Application/Application.hpp"
