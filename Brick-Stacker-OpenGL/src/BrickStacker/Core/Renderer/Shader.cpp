@@ -1,10 +1,26 @@
 #include "pch.hpp"
 #include "Shader.hpp"
 
+static std::string read_file_or_string(const std::string& input)
+{
+	std::ifstream file(input, std::ios::in);
+
+	if (file.is_open()) {
+		std::string result((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		return result;
+	}
+	else {
+		return input;
+	}
+}
+
 namespace BrickStacker
 {
-	Shader::Shader(const std::string& vertSrc, const std::string& fragSrc)
+	Shader::Shader(const std::string& vert, const std::string& frag)
 	{
+		std::string vertSrc = read_file_or_string(vert);
+		std::string fragSrc = read_file_or_string(frag);
+
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -135,5 +151,12 @@ namespace BrickStacker
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 		BS_ASSERT(location != -1, "Specified Uniform does not exist: {0}", name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void Shader::SetUniformTexture(const std::string& name, uint32_t slot) const
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		BS_ASSERT(location != -1, "Specified Uniform does not exist: {0}", name.c_str());
+		glUniform1i(location, slot);
 	}
 }

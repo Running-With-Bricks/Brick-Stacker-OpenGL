@@ -34,7 +34,7 @@ namespace BrickStacker
 
         // Setup Platform/Renderer backends
         ImGui_ImplGlfw_InitForOpenGL(window.GetWindow(), true);
-        ImGui_ImplOpenGL3_Init("#version 460");
+        ImGui_ImplOpenGL3_Init("#version 330 core");
 
         std::ifstream imguiIni{ "imgui.ini" };
         if (!imguiIni.is_open())

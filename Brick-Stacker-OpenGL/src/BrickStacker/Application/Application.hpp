@@ -52,6 +52,8 @@ namespace BrickStacker
 			return Application;
 		}
 
+		const Window GetWindow() const { return m_Window; };
+
 		void Run();
 
 		void Draw();
@@ -65,11 +67,13 @@ namespace BrickStacker
 		Window m_Window{ 800, 600, "Brick Stacker" };
 
 		Ref<Shader> m_MainShader;
+		Ref<Shader> m_TestShader;
 
 		Ref<Texture2D> m_Texture;
 		Ref<Texture2D> m_Texture2;
 
-		Ref<VertexArray>  m_CubeVertexArray;
+		Ref<VertexArray> m_CubeVertexArray;
+		Ref<VertexArray> m_TriVertexArray;
 
 		Ref<Camera> m_Camera;
 

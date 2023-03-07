@@ -1,8 +1,6 @@
 #include "pch.hpp"
 #include "Application.hpp"
 
-#include <algorithm>
-
 namespace std
 {
 	void split_str(const std::string& str, const char delim, std::vector<std::string>& out)
@@ -22,75 +20,17 @@ namespace BrickStacker
 {
 	Application::Application()
 	{
-		const char* vertCode = R"(
-			#version 460 core
-			layout(location = 0) in vec3 position;
-			layout(location = 1) in vec2 texCoord;
-			layout(location = 2) in float texIndex;
-			layout(location = 3) in vec4 color;
-			layout(location = 4) in vec2 tiling;
-			layout(location = 5) in vec3 transformCol1;
-			layout(location = 6) in vec3 transformCol2;
-			layout(location = 7) in vec3 transformCol3;
-			layout(location = 8) in vec3 transformCol4;
+		m_MainShader = Shader::Create("shaders/brick.vert", "shaders/brick.frag");
+		m_TestShader = Shader::Create("shaders/test.vert", "shaders/test.frag");
 
-			uniform mat4 u_ViewMatrix;
-			uniform mat4 u_ProjectionMatrix;
+		m_MainShader->Bind();
+		m_MainShader->SetUniformTexture("TopTexture", 0);
+		m_MainShader->SetUniformTexture("BottomTexture", 1);
+		m_MainShader->Unbind();
 
-			struct VertexOutput
-			{
-				vec4 Color;
-				vec2 TexCoord;
-				float TexIndex;
-				vec2 TilingFactor;
-			};
-			
-			layout (location = 0) out VertexOutput Output;
-
-			void main()
-			{
-				mat4 transform;
-				transform[0] = vec4(transformCol1, 0);
-				transform[1] = vec4(transformCol2, 0);
-				transform[2] = vec4(transformCol3, 0);
-				transform[3] = vec4(transformCol4, 1);
-
-				gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
-				Output.Color = color;
-				Output.TexCoord = texCoord;
-				Output.TexIndex = int(texIndex);
-				Output.TilingFactor = tiling;
-			}
-		)";
-
-		const char* fragCode = R"(
-			#version 460 core
-
-			struct VertexOutput
-			{
-				vec4 Color;
-				vec2 TexCoord;
-				float TexIndex;
-				vec2 TilingFactor;
-			};
-			
-			layout (location = 0) in VertexOutput Input;
-
-			layout (binding = 0) uniform sampler2D Textures[2];
-
-			out vec4 FragColor;
-			void main()
-			{
-				FragColor = Input.Color;
-				switch(int(Input.TexIndex))
-				{
-					case 1: FragColor *= texture(Textures[int(Input.TexIndex)-1], Input.TexCoord*Input.TilingFactor)*Input.Color; break;
-					case 2: FragColor *= texture(Textures[int(Input.TexIndex)-1], Input.TexCoord*Input.TilingFactor)*Input.Color; break;
-				}
-			}
-		)";
-
-		m_MainShader = Shader::Create(vertCode, fragCode);
+		m_TestShader->Bind();
+		m_TestShader->SetUniformTexture("tex", 0);
+		m_TestShader->Unbind();
 
 		//Cube Verts
 		std::vector<float> CubeVerticies =
@@ -187,8 +127,43 @@ namespace BrickStacker
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 
+		std::vector<float> TriVerts =
+		{
+			// positions          // texture coords
+			 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+			 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+			-0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
+		};
+
+		//Cube Indicies
+		std::vector<uint32_t> TriIndices =
+		{
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
+
+		BufferLayout TriLayout =
+		{
+			{ ShaderDataType::Vec3, "Position" },
+			{ ShaderDataType::Vec2, "TexCoord" }
+		};
+
+		Ref<VertexBuffer> triVertexBuffer = VertexBuffer::Create(TriVerts);
+		Ref<IndexBuffer>  triIndexBuffer = IndexBuffer::Create(TriIndices);
+
+		m_TriVertexArray = VertexArray::Create();
+
+		//Setting the layout
+		triVertexBuffer->SetLayout(TriLayout);
+
+		//Binding VertexBuffer and IndexBuffer to VertexArray
+		m_TriVertexArray->AddVertexBuffer(triVertexBuffer);
+		m_TriVertexArray->SetIndexBuffer(triIndexBuffer);
+
+
 		m_Camera = Camera::Create();
-		m_Camera->Position = { 0, 1, 2 };
+		m_Camera->Position = { 0, 1, -5 };
 
 		FramebufferSpecifications fbSpecs;
 		fbSpecs.Width = 1024;
@@ -198,23 +173,23 @@ namespace BrickStacker
 		m_Texture = Texture2D::Create("assets/images/stud_top.png");
 		m_Texture2 = Texture2D::Create("assets/images/stud_bottom.png");
 
-		std::ifstream mapFile("Map.brk", std::ios::in);
-
 		m_Timer.Reset();
+		std::ifstream mapFile("Map.brk", std::ios::in);
+		
 		if (mapFile.is_open())
 		{
 			std::string line;
-
+		
 			bool wasAmbientEncountered{ false };
 			bool wasBaseplateSizeEncountered{ false };
 			bool completedSetup{ false };
 			int currentEntityId = 1;
-
+		
 			while (std::getline(mapFile, line))
 			{
 				std::vector<std::string> separated;
 				std::split_str(line, ' ', separated);
-
+		
 				if (!completedSetup)
 				{
 					if (separated.size() == 3)
@@ -228,7 +203,7 @@ namespace BrickStacker
 						{
 							//Sky Color
 							glm::vec3 color{ 0 };
-
+		
 							std::sscanf(separated[2].c_str(), "%f", &color.r);
 							std::sscanf(separated[1].c_str(), "%f", &color.g);
 							std::sscanf(separated[0].c_str(), "%f", &color.b);
@@ -238,7 +213,7 @@ namespace BrickStacker
 					{
 						//Baseplate Color + Alpha
 						glm::vec3 color{ 0 };
-
+		
 						std::sscanf(separated[2].c_str(), "%f", &color.r);
 						std::sscanf(separated[1].c_str(), "%f", &color.g);
 						std::sscanf(separated[0].c_str(), "%f", &color.b);
@@ -249,7 +224,7 @@ namespace BrickStacker
 						{
 							//Baseplate Size
 							wasBaseplateSizeEncountered = true;
-
+		
 							float r = 0;
 							std::sscanf(separated[0].c_str(), "%f", &r);
 						}
@@ -266,27 +241,28 @@ namespace BrickStacker
 					glm::vec3 position{ 0 };
 					glm::vec3 scale{ 0 };
 					glm::vec4 color{ 0, 0, 0, 1 };
-
+		
 					std::sscanf(separated[0].c_str(), "%f", &position.x);
 					std::sscanf(separated[2].c_str(), "%f", &position.y);
 					std::sscanf(separated[1].c_str(), "%f", &position.z);
-
+		
 					std::sscanf(separated[3].c_str(), "%f", &scale.x);
 					std::sscanf(separated[5].c_str(), "%f", &scale.y);
 					std::sscanf(separated[4].c_str(), "%f", &scale.z);
-
+		
 					std::sscanf(separated[6].c_str(), "%f", &color.r);
 					std::sscanf(separated[7].c_str(), "%f", &color.g);
 					std::sscanf(separated[8].c_str(), "%f", &color.b);
 					std::sscanf(separated[9].c_str(), "%f", &color.a);
-
+		
 					position += scale * .5f;
-
+					position.x = -position.x;
+		
 					auto brick = Brick::Create("");
 					brick->Position = position;
 					brick->Scale = scale;
 					brick->Color = color;
-
+		
 					currentEntityId = m_Bricks.size();
 					m_Bricks.push_back(brick);
 				}
@@ -302,7 +278,7 @@ namespace BrickStacker
 						{
 							name += (i == 1 ? "" : " ") + separated[i];
 						}
-
+		
 						m_Bricks[currentEntityId]->Name = name;
 					}
 					else if (separated[0].rfind("\t+ROT", 0) == 0)
@@ -310,7 +286,7 @@ namespace BrickStacker
 						int rot{ 0 };
 						std::sscanf(separated[1].c_str(), "%d", &rot);
 						m_Bricks[currentEntityId]->Rotation.y = static_cast<float>(rot);
-
+		
 						if ((rot % 180) != 0)
 						{
 							glm::vec3 orgPos = m_Bricks[currentEntityId]->Position - m_Bricks[currentEntityId]->Scale * .5f;
@@ -323,10 +299,10 @@ namespace BrickStacker
 			}
 		}
 		m_SortedBricks = m_Bricks;
+		
+		mapFile.close();
 		m_Timer.Stop();
 		m_LoadTime = m_Timer.Elapsed();
-
-		mapFile.close();
 	}
 
 	Application::~Application()
@@ -453,7 +429,19 @@ namespace BrickStacker
 		m_Texture2->Bind(1);
 
 		if (m_Bricks.size())
+		{
 			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, m_Bricks.size());
+		}
+
+		m_TestShader->Bind();
+
+		m_TriVertexArray->Bind();
+
+		//RenderCommand::DrawIndexed(m_TriVertexArray);
+
+		m_TestShader->Unbind();
+		m_TriVertexArray->Unbind();
+	
 		m_Framebuffer->Unbind();
 
 		RenderCommand::Clear();
@@ -471,7 +459,7 @@ namespace BrickStacker
 		updateFontSize = false;
 
 		m_ImGui.BeginFrame();
-		ImGui::DockSpaceOverViewport();
+		ImGui::DockSpaceOverViewport(NULL, ImGuiDockNodeFlags_::ImGuiDockNodeFlags_PassthruCentralNode);
 
 		if (ImGui::BeginMainMenuBar())
 		{

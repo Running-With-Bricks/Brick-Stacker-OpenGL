@@ -17,7 +17,7 @@ namespace BrickStacker
 
 		static void ResizeCallback(GLFWwindow* window, int width, int height);
 
-		GLFWwindow* GetWindow() const { return m_Window; };
+		GLFWwindow* GetWindowHandle() const { return m_Window; };
 
 		void SetTitle(const std::string& title)
 		{

@@ -18,6 +18,7 @@ namespace BrickStacker
 		vertexArray->Bind();
 		RenderCommand::DrawIndexedInstanced(vertexArray, count);
 
+
 		shader->Unbind();
 		vertexArray->Unbind();
 	}
