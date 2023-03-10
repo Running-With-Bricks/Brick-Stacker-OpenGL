@@ -8,9 +8,9 @@ namespace BrickStacker
 		Planes = planes;
 
 		m_ProjectionMatrix = glm::mat4{ 1.0f };
-		m_ProjectionMatrix[0][0] = 2.f / (Planes.Right - Planes.Left) * Zoom;
-		m_ProjectionMatrix[1][1] = 2.f / (Planes.Bottom - Planes.Top) * Zoom;
-		m_ProjectionMatrix[2][2] = 1.f / (Planes.Far - Planes.Near);
+		m_ProjectionMatrix[0][0] = -2.0f / (Planes.Right - Planes.Left) * Zoom;
+		m_ProjectionMatrix[1][1] = -2.0f / (Planes.Bottom - Planes.Top) * Zoom;
+		m_ProjectionMatrix[2][2] = 1.0f / (Planes.Far - Planes.Near);
 		m_ProjectionMatrix[3][0] = -(Planes.Right + Planes.Left) / (Planes.Right - Planes.Left);
 		m_ProjectionMatrix[3][1] = -(Planes.Bottom + Planes.Top) / (Planes.Bottom - Planes.Top);
 		m_ProjectionMatrix[3][2] = -Planes.Near / (Planes.Far - Planes.Near);
@@ -32,13 +32,13 @@ namespace BrickStacker
 		Planes.Far = farPlane;
 
 		fov = glm::radians(FOV);
-		assert(glm::abs(Aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
-		const float tanHalfFov = tan(fov / 2.f);
+		BS_ASSERT(glm::abs(Aspect - std::numeric_limits<float>::epsilon()) > 0.0f, "Aspect is zero");
+		const float tanHalfFov = tan(fov / 2.0f);
 		m_ProjectionMatrix = glm::mat4{ 0.0f };
-		m_ProjectionMatrix[0][0] = 1.f / (Aspect * tanHalfFov);
-		m_ProjectionMatrix[1][1] = 1.f / (tanHalfFov);
+		m_ProjectionMatrix[0][0] = -1.0f / (Aspect * tanHalfFov);
+		m_ProjectionMatrix[1][1] = 1.0f / (tanHalfFov);
 		m_ProjectionMatrix[2][2] = Planes.Far / (Planes.Far - Planes.Near);
-		m_ProjectionMatrix[2][3] = 1.f;
+		m_ProjectionMatrix[2][3] = 1.0f;
 		m_ProjectionMatrix[3][2] = -(Planes.Far * Planes.Near) / (Planes.Far - Planes.Near);
 	}
 

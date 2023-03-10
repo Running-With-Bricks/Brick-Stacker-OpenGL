@@ -70,23 +70,23 @@ namespace BrickStacker
 		//Cube Indicies
 		std::vector<uint32_t> CubeIndicies =
 		{
-			1, 2, 0,
-			3, 0, 2,
+			0, 2, 1,
+			2, 0, 3,
 
-			4, 6, 5,
-			6, 4, 7,
+			5, 6, 4,
+			7, 4, 6,
 
-			9, 10, 8,
-			11, 8, 10,
+			8, 10, 9,
+			10, 8, 11,
 
-			12, 14, 13,
-			14, 12, 15,
+			13, 14, 12,
+			15, 12, 14,
 
-			16, 18, 17,
-			18, 16, 19,
+			17, 18, 16,
+			19, 16, 18,
 
-			21, 22, 20,
-			23, 20, 22,
+			20, 22, 21,
+			22, 20, 23,
 		};
 
 
@@ -221,7 +221,6 @@ namespace BrickStacker
 					std::sscanf(separated[9].c_str(), "%f", &color.a);
 		
 					position += scale * .5f;
-					position.x = -position.x;
 		
 					auto brick = Brick::Create("");
 					brick->Position = position;
@@ -250,15 +249,15 @@ namespace BrickStacker
 					{
 						int rot{ 0 };
 						std::sscanf(separated[1].c_str(), "%d", &rot);
-						m_Bricks[currentEntityId]->Rotation.y = static_cast<float>(rot);
-		
+
 						if ((rot % 180) != 0)
 						{
-							glm::vec3 orgPos = m_Bricks[currentEntityId]->Position - m_Bricks[currentEntityId]->Scale * .5f;
 							float tempXScale = static_cast<float>(m_Bricks[currentEntityId]->Scale.x);
 							m_Bricks[currentEntityId]->Scale.x = m_Bricks[currentEntityId]->Scale.z;
 							m_Bricks[currentEntityId]->Scale.z = tempXScale;
-						}
+						} 
+
+						m_Bricks[currentEntityId]->Rotation.y = static_cast<float>(rot);
 					}
 				}
 			}
