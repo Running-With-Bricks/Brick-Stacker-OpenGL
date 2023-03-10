@@ -57,6 +57,7 @@ namespace BrickStacker
 		bool m_IsLoaded = false;
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
+		uint32_t m_SamplerRendererID;
 		GLenum m_InternalFormat, m_DataFormat;
 	};
 }

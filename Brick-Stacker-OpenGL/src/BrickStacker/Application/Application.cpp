@@ -127,41 +127,6 @@ namespace BrickStacker
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 
-		std::vector<float> TriVerts =
-		{
-			// positions          // texture coords
-			 0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-			 0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-			-0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
-		};
-
-		//Cube Indicies
-		std::vector<uint32_t> TriIndices =
-		{
-			0, 1, 3, // first triangle
-			1, 2, 3  // second triangle
-		};
-
-		BufferLayout TriLayout =
-		{
-			{ ShaderDataType::Vec3, "Position" },
-			{ ShaderDataType::Vec2, "TexCoord" }
-		};
-
-		Ref<VertexBuffer> triVertexBuffer = VertexBuffer::Create(TriVerts);
-		Ref<IndexBuffer>  triIndexBuffer = IndexBuffer::Create(TriIndices);
-
-		m_TriVertexArray = VertexArray::Create();
-
-		//Setting the layout
-		triVertexBuffer->SetLayout(TriLayout);
-
-		//Binding VertexBuffer and IndexBuffer to VertexArray
-		m_TriVertexArray->AddVertexBuffer(triVertexBuffer);
-		m_TriVertexArray->SetIndexBuffer(triIndexBuffer);
-
-
 		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 1, -5 };
 
@@ -170,8 +135,8 @@ namespace BrickStacker
 		fbSpecs.Height = 1024;
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
-		m_Texture = Texture2D::Create("assets/images/stud_top.png");
-		m_Texture2 = Texture2D::Create("assets/images/stud_bottom.png");
+		m_TopBrickTexture = Texture2D::Create("./assets/images/stud_top.png");
+		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");
 
 		m_Timer.Reset();
 		std::ifstream mapFile("Map.brk", std::ios::in);
@@ -425,22 +390,13 @@ namespace BrickStacker
 		m_Framebuffer->Bind();
 		RenderCommand::Clear();
 
-		m_Texture->Bind(0);
-		m_Texture2->Bind(1);
+		m_TopBrickTexture->Bind(0);
+		m_BottomBrickTexture->Bind(1);
 
 		if (m_Bricks.size())
 		{
 			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, m_Bricks.size());
 		}
-
-		m_TestShader->Bind();
-
-		m_TriVertexArray->Bind();
-
-		//RenderCommand::DrawIndexed(m_TriVertexArray);
-
-		m_TestShader->Unbind();
-		m_TriVertexArray->Unbind();
 	
 		m_Framebuffer->Unbind();
 

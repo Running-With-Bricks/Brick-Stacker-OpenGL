@@ -1,4 +1,4 @@
-#version 330 core
+#version 330
 
 in vec4 Color;
 in vec2 TexCoord;
@@ -19,7 +19,7 @@ void main()
 
 	switch(int(TexIndex))
 	{
-		case 1: FragColor = texture(TopTexture, TexCoord); break;
-		case 2: FragColor = texture(BottomTexture, TexCoord); break;
+		case 1: FragColor *= texture(TopTexture, TexCoord*TilingFactor); break;
+		case 2: FragColor *= texture(BottomTexture, TexCoord*TilingFactor); break;
 	}
 }

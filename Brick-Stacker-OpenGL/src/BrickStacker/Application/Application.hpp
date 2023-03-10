@@ -52,7 +52,7 @@ namespace BrickStacker
 			return Application;
 		}
 
-		const Window GetWindow() const { return m_Window; };
+		const Window& GetWindow() const { return m_Window; };
 
 		void Run();
 
@@ -69,11 +69,10 @@ namespace BrickStacker
 		Ref<Shader> m_MainShader;
 		Ref<Shader> m_TestShader;
 
-		Ref<Texture2D> m_Texture;
-		Ref<Texture2D> m_Texture2;
+		Ref<Texture2D> m_TopBrickTexture;
+		Ref<Texture2D> m_BottomBrickTexture;
 
 		Ref<VertexArray> m_CubeVertexArray;
-		Ref<VertexArray> m_TriVertexArray;
 
 		Ref<Camera> m_Camera;
 
