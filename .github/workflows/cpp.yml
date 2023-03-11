@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: abel0b/setup-premake@v2.2
+      with: 
+        version: "5.0.0-beta2"
+    - name: Compile my project
+      run:
+        premake5 gmake2
+        make
