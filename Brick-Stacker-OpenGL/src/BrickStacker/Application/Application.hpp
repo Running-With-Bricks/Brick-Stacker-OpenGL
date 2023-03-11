@@ -11,6 +11,7 @@
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
+#include "BrickStacker/Utils/Profiler.hpp"
 
 namespace BrickStacker
 {
@@ -85,6 +86,7 @@ namespace BrickStacker
 		ImGuiLayer m_ImGui{m_Window};
 		Discord& m_Discord = Discord::Get();
 		Renderer& m_Renderer = Renderer::Get();
+		Profiler& m_Profiler = Profiler::Get();
 
 		std::vector<Ref<Brick>> m_Bricks;
 		std::vector<Ref<Brick>> m_SortedBricks;

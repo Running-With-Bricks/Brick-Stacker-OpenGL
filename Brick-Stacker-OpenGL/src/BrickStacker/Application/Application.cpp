@@ -89,7 +89,6 @@ namespace BrickStacker
 			22, 20, 23,
 		};
 
-
 		//Specifying Vertex properties
 		//Vec3 of floats for the position and Vec4 of floats for Color
 		BufferLayout CubeLayout =
@@ -290,6 +289,8 @@ namespace BrickStacker
 		while (!m_Window.ShouldClose())
 		{
 			m_Discord.Update();
+
+			m_Profiler.AddFrame(1.0f / m_Timer.Elapsed());
 
 			m_Timer.Reset();
 			Draw();
@@ -496,20 +497,11 @@ namespace BrickStacker
 
 		ImGui::Begin("Debug");
 
-		const float FPS = 1 / m_Timer.Elapsed();
-		static float lowestFPS = 1000;
-		static float highestFPS = 0;
-		static float FPSSum = 0;
-		static float FPSCount = 0;
-		lowestFPS = (lowestFPS > FPS && FPS > 10 ? FPS : lowestFPS);
-		highestFPS = (highestFPS < FPS ? FPS : highestFPS);
-		FPSSum += FPS;
-		FPSCount++;
-
-		ImGui::Text("FPS: %.1f", FPS);
-		ImGui::Text("Average FPS: %.1f", FPSSum / FPSCount);
-		ImGui::Text("Min FPS: %.1f", lowestFPS);
-		ImGui::Text("Max FPS: %.1f", highestFPS);
+		ImGui::Text("FPS: %.1f", m_Profiler.GetFPSBuffer().Back());
+		ImGui::Text("Actual FPS: %.1f", m_Profiler.GetFPSBuffer().Current());
+		ImGui::Text("Average FPS: %.1f", m_Profiler.GetFPSBuffer().Average());
+		ImGui::Text("Max FPS: %.1f", m_Profiler.HighestFPS());
+		ImGui::Text("Frame Count: %d", m_Profiler.FrameCount());
 		ImGui::Separator();
 		ImGui::Text("Map load time: %.3fs", m_LoadTime);
 		ImGui::Text("Bricks: %d", m_Bricks.size());

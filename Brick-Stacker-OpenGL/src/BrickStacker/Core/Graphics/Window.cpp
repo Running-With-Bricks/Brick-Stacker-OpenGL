@@ -30,6 +30,7 @@ namespace BrickStacker
 		glfwSetWindowSizeLimits(m_Window, 266, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwSwapInterval((int)m_VSync);
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 		gladLoadGL();
 	}

@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texCoord;
 layout(location = 2) in float texIndex;
@@ -14,8 +14,7 @@ uniform mat4 u_ProjectionMatrix;
 
 out vec4 Color;
 out vec2 TexCoord;
-out float TexIndex;
-out vec2 TilingFactor;
+flat out float TexIndex;
 
 void main()
 {
@@ -26,8 +25,7 @@ void main()
 	transform[3] = vec4(transformCol4, 1);
 
 	gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
-	Color = vec4(color.r, color.g, color.b, color.a);
-	TexCoord = vec2(texCoord.x, texCoord.y);
-	TexIndex = float(texIndex);
-	TilingFactor = vec2(tiling.x, tiling.y);
+	Color = color;
+	TexCoord = texCoord * tiling;
+	TexIndex = texIndex;
 }
