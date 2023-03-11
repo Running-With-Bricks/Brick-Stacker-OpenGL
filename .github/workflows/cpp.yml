@@ -16,6 +16,6 @@ jobs:
       with: 
         version: "5.0.0-beta2"
     - name: Compile my project
-      run:
-        premake5 gmake2
-        make
+      run: premake5 gmake2
+    - name: Compile my project
+      run: make
