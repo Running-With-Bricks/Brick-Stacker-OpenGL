@@ -27,7 +27,7 @@ jobs:
     - name: Build with msbuild
       run: msbuild Brick-Stacker-OpenGL.sln /p:Configuration=Release
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: premake
-        path: build/
+        name: windows
+        path: bin\Brick-Stacker-OpenGL\Release-windows-x86_64\
