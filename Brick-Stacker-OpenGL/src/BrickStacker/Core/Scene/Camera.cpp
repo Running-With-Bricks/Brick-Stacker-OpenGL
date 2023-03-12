@@ -47,6 +47,14 @@ namespace BrickStacker
 		Position = position;
 		TargetPos = Position + direction;
 
+		if (Position.x == TargetPos.x && Position.z == TargetPos.z)
+		{
+			auto rot = Rotation;
+			SetViewYXZ(position, glm::vec3(90 * (TargetPos.y <= Position.y ? 1 : -1), 0, 0));
+			Rotation = rot;
+			return;
+		}
+
 		const glm::vec3 w{ glm::normalize(direction) };
 		const glm::vec3 u{ glm::normalize(glm::cross(w, up)) };
 		const glm::vec3 v{ glm::cross(w, u) };
