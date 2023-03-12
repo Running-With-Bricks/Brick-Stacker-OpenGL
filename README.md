@@ -1,6 +1,6 @@
 # Brick-Stacker
 ## About
-Fast Light-Weight workshop for [Brick-Hill](https://www.brick-hill.com) written in C++, using OpenGL.
+Blazingly Fast Light-Weight workshop for [Brick-Hill](https://www.brick-hill.com) written in C++, using OpenGL.
 
 ## How to build
 Brick-Stacker uses [Premake 5.0](https://premake.github.io) to allow easy project generation across all platforms.
