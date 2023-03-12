@@ -1,0 +1,33 @@
+name: build_ubuntu
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.gitignore'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Setup premake
+      uses: abel0b/setup-premake@v2.2
+      with:
+        version: "5.0.0-beta2"
+    - name: Install required packages
+      run: sudo apt-get install build-essential libglfw3-dev libglew-dev pkg-config
+    - name: Generate project files
+      run: premake5 gmake2
+    - name: Build with make
+      run: make config=release
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux
+        path: bin/Brick-Stacker-OpenGL/Release-linux-x86_64/
