@@ -9,6 +9,10 @@
 /bin/
 /bin-obj/
 
+/vendor/bin-obj/
+/vendor/bin/
+!/vendor/bin/premake5/
+
 #glfw build
 #GitIgnore is dumb, so had to do this
 *.cmake
