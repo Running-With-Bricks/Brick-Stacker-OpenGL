@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.hpp"
 
+#include "glm/glm.hpp"
+
 #include "BrickStacker/Core/Graphics/Window.hpp"
 
 #include "BrickStacker/Core/Renderer/Shader.hpp"
@@ -8,6 +10,8 @@
 #include "BrickStacker/Core/Renderer/Buffer.hpp"
 #include "BrickStacker/Core/Renderer/Renderer.hpp"
 #include "BrickStacker/Core/Graphics/FrameBuffer.hpp"
+#include "BrickStacker/Core/Input/Keyboard.hpp"
+#include "BrickStacker/Core/Input/Mouse.hpp"
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
@@ -59,6 +63,8 @@ namespace BrickStacker
 
 		void Draw();
 
+		bool IsFocusedOnViewport() { return m_ViewportFocused; };
+
 	private:
 		Application();
 		~Application();
@@ -81,8 +87,10 @@ namespace BrickStacker
 		glm::vec2 m_ViewportSize{ 1920, 1080 };
 
 		float m_LoadTime;
+		bool m_ViewportFocused = false;
 
 		Timer m_Timer{};
+		float m_LastFrame{ 1 };
 		ImGuiLayer m_ImGui{m_Window};
 		Discord& m_Discord = Discord::Get();
 		Renderer& m_Renderer = Renderer::Get();

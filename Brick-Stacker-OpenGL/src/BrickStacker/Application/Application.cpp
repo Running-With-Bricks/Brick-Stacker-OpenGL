@@ -21,16 +21,11 @@ namespace BrickStacker
 	Application::Application()
 	{
 		m_MainShader = Shader::Create("shaders/brick.vert", "shaders/brick.frag");
-		m_TestShader = Shader::Create("shaders/test.vert", "shaders/test.frag");
 
 		m_MainShader->Bind();
 		m_MainShader->SetUniformTexture("TopTexture", 0);
 		m_MainShader->SetUniformTexture("BottomTexture", 1);
 		m_MainShader->Unbind();
-
-		m_TestShader->Bind();
-		m_TestShader->SetUniformTexture("tex", 0);
-		m_TestShader->Unbind();
 
 		//Cube Verts
 		std::vector<float> CubeVerticies =
@@ -125,7 +120,6 @@ namespace BrickStacker
 		m_CubeVertexArray->AddVertexBuffer(cubeInstancedVertexBuffer);
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
-
 		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 1, -5 };
 
@@ -136,7 +130,7 @@ namespace BrickStacker
 
 		m_TopBrickTexture = Texture2D::Create("./assets/images/stud_top.png");
 		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");
-
+			 
 		m_Timer.Reset();
 		std::ifstream mapFile("Map.brk", std::ios::in);
 		
@@ -286,17 +280,22 @@ namespace BrickStacker
 
 		m_Renderer.SetCamera(m_Camera);
 
+		Keyboard::Setup();
+		Mouse::Setup();
+
 		while (!m_Window.ShouldClose())
 		{
-			m_Discord.Update();
-
-			m_Profiler.AddFrame(1.0f / m_Timer.Elapsed());
-
 			m_Timer.Reset();
-			Draw();
-			m_Timer.Stop();
 
 			m_Window.Update();
+			m_Discord.Update();
+
+			m_Profiler.AddFrame(1.0f / m_LastFrame);
+
+			Draw();
+
+			m_Timer.Stop();
+			m_LastFrame = m_Timer.Elapsed();
 		}
 
 		ImGui::SaveIniSettingsToDisk("imgui.ini");
@@ -329,49 +328,51 @@ namespace BrickStacker
 			if (!brick->Visible)
 				continue;
 
-			const float x{ glm::radians(brick->Rotation.x) }, y{ glm::radians(brick->Rotation.y) }, z{ glm::radians(brick->Rotation.z) };
-			const float c3 = glm::cos(z);
-			const float s3 = glm::sin(z);
-			const float c2 = glm::cos(x);
-			const float s2 = glm::sin(x);
-			const float c1 = glm::cos(y);
-			const float s1 = glm::sin(y);
-			glm::mat4 brickMatrix = glm::mat4{
+			//pushback brick data into instancedData
 			{
-				brick->Scale.x * (c1 * c3 + s1 * s2 * s3),
-				brick->Scale.x * (c2 * s3),
-				brick->Scale.x * (c1 * s2 * s3 - c3 * s1),
-				0.0f,
-			},
-			{
-				brick->Scale.y * (c3 * s1 * s2 - c1 * s3),
-				brick->Scale.y * (c2 * c3),
-				brick->Scale.y * (c1 * c3 * s2 + s1 * s3),
-				0.0f,
-			},
-			{
-				brick->Scale.z * (c2 * s1),
-				brick->Scale.z * (-s2),
-				brick->Scale.z * (c1 * c2),
-				0.0f,
-			},
-			{brick->Position.x, brick->Position.y, brick->Position.z, 1.0f} };
-
-			for (size_t x = 0; x < 4; x++)
-			{
-				instancedData.push_back(brick->Color[x]);
-			}
-			instancedData.push_back(brick->Scale.x);
-			instancedData.push_back(brick->Scale.z);
-			for (size_t x = 0; x < 4; x++)
-			{
-				for (size_t y = 0; y < 3; y++)
+				const float x{ glm::radians(brick->Rotation.x) }, y{ glm::radians(brick->Rotation.y) }, z{ glm::radians(brick->Rotation.z) };
+				const float c3 = glm::cos(z);
+				const float s3 = glm::sin(z);
+				const float c2 = glm::cos(x);
+				const float s2 = glm::sin(x);
+				const float c1 = glm::cos(y);
+				const float s1 = glm::sin(y);
+				glm::mat4 brickMatrix = glm::mat4{
 				{
-					instancedData.push_back(brickMatrix[x][y]);
+					brick->Scale.x * (c1 * c3 + s1 * s2 * s3),
+					brick->Scale.x * (c2 * s3),
+					brick->Scale.x * (c1 * s2 * s3 - c3 * s1),
+					0.0f,
+				},
+				{
+					brick->Scale.y * (c3 * s1 * s2 - c1 * s3),
+					brick->Scale.y * (c2 * c3),
+					brick->Scale.y * (c1 * c3 * s2 + s1 * s3),
+					0.0f,
+				},
+				{
+					brick->Scale.z * (c2 * s1),
+					brick->Scale.z * (-s2),
+					brick->Scale.z * (c1 * c2),
+					0.0f,
+				},
+				{brick->Position.x, brick->Position.y, brick->Position.z, 1.0f} };
+
+				for (size_t x = 0; x < 4; x++)
+				{
+					instancedData.push_back(brick->Color[x]);
+				}
+				instancedData.push_back(brick->Scale.x);
+				instancedData.push_back(brick->Scale.z);
+				for (size_t x = 0; x < 4; x++)
+				{
+					for (size_t y = 0; y < 3; y++)
+					{
+						instancedData.push_back(brickMatrix[x][y]);
+					}
 				}
 			}
 		}
-
 		m_CubeVertexArray->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
 	}
 
@@ -385,14 +386,14 @@ namespace BrickStacker
 			m_Camera->Planes = { -m_Camera->Aspect, m_Camera->Aspect, -1, 1, m_Camera->Planes.Near, m_Camera->Planes.Far };
 		}
 
-		m_Camera->Update();
+		m_Camera->Update(m_LastFrame);
 
 		m_Framebuffer->Bind();
 		RenderCommand::Clear();
 
 		m_TopBrickTexture->Bind(0);
 		m_BottomBrickTexture->Bind(1);
-
+		
 		if (m_Bricks.size())
 		{
 			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, m_Bricks.size());
@@ -445,6 +446,7 @@ namespace BrickStacker
 
 		ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
+		m_ViewportFocused = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
 		if (m_ViewportSize != *((glm::vec2*)&viewportSize) && viewportSize.x != 0 && viewportSize.y != 0)
 		{
@@ -496,7 +498,6 @@ namespace BrickStacker
 		int behaviour = (int)m_Camera->Behaviour;
 
 		ImGui::Begin("Debug");
-
 		ImGui::Text("FPS: %.1f", m_Profiler.GetFPSBuffer().Back());
 		ImGui::Text("Actual FPS: %.1f", m_Profiler.GetFPSBuffer().Current());
 		ImGui::Text("Average FPS: %.1f", m_Profiler.GetFPSBuffer().Average());
@@ -506,13 +507,56 @@ namespace BrickStacker
 		ImGui::Text("Map load time: %.3fs", m_LoadTime);
 		ImGui::Text("Bricks: %d", m_Bricks.size());
 		ImGui::Separator();
-		ImGui::Combo("CamType", &type, "Perspective\0Orthographic\0\0");
-		ImGui::Combo("CamBehaviour", &behaviour, "None\0Free\0Orbit\0\0");
-		ImGui::DragFloat("CamFOV", &m_Camera->FOV, .1f, 0.1f, 120, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-		ImGui::DragFloat("CamZoom", &m_Camera->Zoom, .1f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-		ImGui::DragFloat3("CamPos", &m_Camera->Position.x, .1f);
-		ImGui::DragFloat3("CamRot", &m_Camera->Rotation.x, .5f);
-		ImGui::DragFloat3("CamTar", &m_Camera->TargetPos.x, .1f);
+
+		ImGui::PushID(-1);
+		if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+		{
+			ImGui::Combo("Type", &type, "Perspective\0Orthographic\0\0");
+			ImGui::Combo("Behaviour", &behaviour, "None\0Free\0Orbit\0\0");
+
+			if (m_Camera->Type == CameraType::Perspective)
+				ImGui::DragFloat("FOV", &m_Camera->FOV, .1f, 0.1f, 120, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+			else if (m_Camera->Type == CameraType::Orthographic)
+				ImGui::DragFloat("Zoom", &m_Camera->Zoom, .1f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+
+			if (m_Camera->Behaviour == CameraBehaviour::Free)
+				ImGui::DragFloat3("Position", &m_Camera->Position.x, .1f);
+
+			if (m_Camera->Behaviour == CameraBehaviour::Free)
+				ImGui::DragFloat3("Rotation", &m_Camera->Rotation.x, .5f);
+			else if (m_Camera->Behaviour == CameraBehaviour::Orbit)
+				ImGui::DragFloat3("Target Position", &m_Camera->TargetPos.x, .1f);
+
+			if (m_Camera->Behaviour == CameraBehaviour::Free)
+			{
+				if (ImGui::TreeNodeEx("Movement", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::DragFloat("Start Accelerating After", &m_Camera->AccelerateAfter, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Acceleration", &m_Camera->Acceleration, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Speed", &m_Camera->Speed, .5f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Shift Multiplier", &m_Camera->ShiftMultiplier, .25f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::Checkbox("Ignore Delta Time", &m_Camera->IgnoreDeltaTime);
+					ImGui::TreePop();
+				}
+			}
+
+			if (m_Camera->Behaviour != CameraBehaviour::None)
+			{
+				if (ImGui::TreeNodeEx("Turning", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					if (m_Camera->Behaviour == CameraBehaviour::Orbit)
+						ImGui::DragFloat("Distance", &m_Camera->Distance, .5f, 0.0125f, 10000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Sensitivity", &m_Camera->Sensitivity, .05f, 0.0125f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::Checkbox("Invert X", &m_Camera->InvertX);
+					ImGui::Checkbox("Invert Y", &m_Camera->InvertY);
+					if (m_Camera->Behaviour == CameraBehaviour::Orbit)
+						ImGui::Checkbox("Invert Scroll", &m_Camera->InvertScroll);
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::PopID();
 
 		ImGui::Separator();
 

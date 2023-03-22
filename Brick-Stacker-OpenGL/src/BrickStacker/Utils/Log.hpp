@@ -24,11 +24,11 @@ namespace BrickStacker
 #endif
 
 
-#define BS_TRACE(...) ::BrickStacker::Log::GetLogger()->trace(__VA_ARGS__)
-#define BS_INFO(...)  ::BrickStacker::Log::GetLogger()->info(__VA_ARGS__)
-#define BS_WARN(...)  ::BrickStacker::Log::GetLogger()->warn(__VA_ARGS__)
-#define BS_ERROR(...) ::BrickStacker::Log::GetLogger()->error(__VA_ARGS__)
-#define BS_FATAL(...) ::BrickStacker::Log::GetLogger()->critical(__VA_ARGS__)
+#define BS_TRACE(...) BrickStacker::Log::GetLogger()->trace(__VA_ARGS__)
+#define BS_INFO(...)  BrickStacker::Log::GetLogger()->info(__VA_ARGS__)
+#define BS_WARN(...)  BrickStacker::Log::GetLogger()->warn(__VA_ARGS__)
+#define BS_ERROR(...) BrickStacker::Log::GetLogger()->error(__VA_ARGS__)
+#define BS_FATAL(...) BrickStacker::Log::GetLogger()->critical(__VA_ARGS__)
 
 #ifdef BS_ENABLE_ASSERTS
 	#define BS_ASSERT(x, ...) { if(!(x)) { BS_ERROR(__VA_ARGS__); __debugbreak(); } }

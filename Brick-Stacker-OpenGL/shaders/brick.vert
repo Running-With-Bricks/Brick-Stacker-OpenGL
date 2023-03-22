@@ -12,6 +12,9 @@ layout(location = 8) in vec3 transformCol4;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 
+uniform sampler2D TopTexture;
+uniform sampler2D BottomTexture;
+
 out vec4 Color;
 out vec2 TexCoord;
 flat out float TexIndex;
