@@ -16,6 +16,7 @@ namespace std
 	}
 }
 
+
 namespace BrickStacker
 {
 	Application::Application()
