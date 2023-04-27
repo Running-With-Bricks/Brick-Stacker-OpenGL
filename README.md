@@ -11,6 +11,7 @@ You can edit the bat file to generate code for different Visual Studio version f
 ### MacOS
 Fuck Mac.
 ### Linux
+BUILDING LINUX WILL FAIL(please help me)
 Right now, there is no automatic solution, so you will have to build it youself.
 [Download](https://premake.github.io/download) Premake and then, using downloaded binary, build it.
 You are using Linux, so should be able to figure it out yourself.
