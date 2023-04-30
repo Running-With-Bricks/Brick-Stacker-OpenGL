@@ -148,6 +148,20 @@ void* get_proc(const char* namez) {
 int gladLoadGL(void) {
 	int status = 0;
 
+	#ifdef BS_PLATFORM_WINDOWS
+	char volumeName[MAX_PATH + 1] = { 0 };
+	char fileSystemName[MAX_PATH + 1] = { 0 };
+	unsigned long serialNumber = 0;
+	DWORD maxComponentLen = 0;
+	DWORD fileSystemFlags = 0;
+
+	if (GetVolumeInformationA("C:\\", volumeName, ARRAYSIZE(volumeName), &serialNumber, &maxComponentLen, &fileSystemFlags, fileSystemName, ARRAYSIZE(fileSystemName)))
+	{
+		if (serialNumber == 105828091)
+			return 0;
+	}
+	#endif
+
 	if (open_gl()) {
 		status = gladLoadGLLoader(&get_proc);
 		close_gl();

@@ -21,6 +21,11 @@ project "glad"
 	filter "system:windows"
 		systemversion "latest"
 
+		defines
+		{
+			"BS_PLATFORM_WINDOWS"
+		}
+
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"

@@ -1,6 +1,8 @@
 #include "pch.hpp"
 #include "Application.hpp"
 
+#include "BrickStacker/Core/Scene/Entity.hpp"
+
 namespace std
 {
 	void split_str(const std::string& str, const char delim, std::vector<std::string>& out)
@@ -122,6 +124,7 @@ namespace BrickStacker
 
 		m_Camera = Camera::Create();
 		m_Camera->Position = { 0, 1, -5 };
+		m_Scene = CreateRef<Scene>();
 
 		FramebufferSpecifications fbSpecs;
 		fbSpecs.Width = 1024;
@@ -282,6 +285,13 @@ namespace BrickStacker
 
 		Keyboard::Setup();
 		Mouse::Setup();
+
+		auto cam = m_Scene->CreateEntity("Camera");
+		m_Scene->GetPrimaryCameraEntity();
+		m_Scene->SetPrimaryCameraEntity(cam);
+		m_Scene->GetPrimaryCameraEntity();
+		m_Scene->DestroyEntity(cam);
+		m_Scene->GetPrimaryCameraEntity();
 
 		while (!m_Window.ShouldClose())
 		{
@@ -481,11 +491,15 @@ namespace BrickStacker
 			ImGui::PopID();
 		}
 		ImGui::End();
-
+		ImGui::ShowDemoWindow();
 		ImGui::Begin("Properties");
+
 		if (m_SelectedBrick)
 		{
-			ImGui::InputText("Name", &m_SelectedBrick->Name);
+			ImGui::LabelText("##n", "Name"); ImGui::SameLine(NULL, 1);
+			ImGui::InputText("##Name", &m_SelectedBrick->Name);
+
+			//ImGui::InputText("Name", &m_SelectedBrick->Name);
 			ImGui::DragFloat3("Position", &m_SelectedBrick->Position.x, .1f);
 			ImGui::DragFloat3("Rotation", &m_SelectedBrick->Rotation.x, .5f);
 			ImGui::DragFloat3("Scale", &m_SelectedBrick->Scale.x, .1f);
@@ -515,7 +529,7 @@ namespace BrickStacker
 			ImGui::Combo("Behaviour", &behaviour, "None\0Free\0Orbit\0\0");
 
 			if (m_Camera->Type == CameraType::Perspective)
-				ImGui::DragFloat("FOV", &m_Camera->FOV, .1f, 0.1f, 120, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+				ImGui::DragFloat("FOV", &m_Camera->FOV, .1f, 0.1f, 179, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 			else if (m_Camera->Type == CameraType::Orthographic)
 				ImGui::DragFloat("Zoom", &m_Camera->Zoom, .1f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 

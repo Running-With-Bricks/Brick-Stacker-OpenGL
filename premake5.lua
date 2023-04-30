@@ -42,7 +42,8 @@ project "Brick-Stacker-OpenGL"
 		"%{wks.location}/vendor/stb_image/include",
 		"%{wks.location}/vendor/DiscordGameSDK/include",
 		"%{wks.location}/vendor/ImGui/include",
-		"%{wks.location}/dependancies/glm/include"
+		"%{wks.location}/dependancies/glm/include",
+		"%{wks.location}/vendor/EnTT/include",
 	}
 
 	links

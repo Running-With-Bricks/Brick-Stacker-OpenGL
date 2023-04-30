@@ -37,6 +37,6 @@ namespace BrickStacker
 		}
 		~Renderer() {}
 
-		Ref<Camera> m_SceneCamera;
+		Weak<Camera> m_SceneCamera;
 	};
 }

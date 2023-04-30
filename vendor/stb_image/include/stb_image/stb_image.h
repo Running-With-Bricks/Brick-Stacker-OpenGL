@@ -1986,7 +1986,7 @@ typedef struct
    int            succ_low;
    int            eob_run;
    int            jfif;
-   int            app14_color_transform; // Adobe APP14 tag
+   int            app14_color_transform; // Adobe APP14 Name
    int            rgb;
 
    int scan_n, order[4];
@@ -3164,21 +3164,21 @@ static int stbi__process_marker(stbi__jpeg *z, int m)
       L -= 2;
 
       if (m == 0xE0 && L >= 5) { // JFIF APP0 segment
-         static const unsigned char tag[5] = {'J','F','I','F','\0'};
+         static const unsigned char Name[5] = {'J','F','I','F','\0'};
          int ok = 1;
          int i;
          for (i=0; i < 5; ++i)
-            if (stbi__get8(z->s) != tag[i])
+            if (stbi__get8(z->s) != Name[i])
                ok = 0;
          L -= 5;
          if (ok)
             z->jfif = 1;
       } else if (m == 0xEE && L >= 12) { // Adobe APP14 segment
-         static const unsigned char tag[6] = {'A','d','o','b','e','\0'};
+         static const unsigned char Name[6] = {'A','d','o','b','e','\0'};
          int ok = 1;
          int i;
          for (i=0; i < 6; ++i)
-            if (stbi__get8(z->s) != tag[i])
+            if (stbi__get8(z->s) != Name[i])
                ok = 0;
          L -= 6;
          if (ok) {
@@ -6839,8 +6839,8 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
    memset( g->history, 0x00, g->w * g->h );        // pixels that were affected previous frame
 
    for (;;) {
-      int tag = stbi__get8(s);
-      switch (tag) {
+      int Name = stbi__get8(s);
+      switch (Name) {
          case 0x2C: /* Image Descriptor */
          {
             stbi__int32 x, y, w, h;

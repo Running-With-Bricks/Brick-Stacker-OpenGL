@@ -12,6 +12,8 @@
 #include "BrickStacker/Core/Graphics/FrameBuffer.hpp"
 #include "BrickStacker/Core/Input/Keyboard.hpp"
 #include "BrickStacker/Core/Input/Mouse.hpp"
+#include "BrickStacker/Core/Scene/Scene.hpp"
+#include "BrickStacker/Core/Scene/Entity.hpp"
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
@@ -82,6 +84,7 @@ namespace BrickStacker
 		Ref<VertexArray> m_CubeVertexArray;
 
 		Ref<Camera> m_Camera;
+		Ref<Scene> m_Scene;
 
 		Ref<Framebuffer> m_Framebuffer;
 		glm::vec2 m_ViewportSize{ 1920, 1080 };

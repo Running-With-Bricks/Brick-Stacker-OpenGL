@@ -10,14 +10,17 @@ namespace BrickStacker
 
 	void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, int count)
 	{
+		auto sceneCamera = m_SceneCamera.lock();
+		if (!sceneCamera)
+			return;
+
 		shader->Bind();
 
-		shader->SetUniformMat4("u_ViewMatrix", m_SceneCamera->GetViewMatrix());
-		shader->SetUniformMat4("u_ProjectionMatrix", m_SceneCamera->GetProjectionMatrix());
+		shader->SetUniformMat4("u_ViewMatrix", sceneCamera->GetViewMatrix());
+		shader->SetUniformMat4("u_ProjectionMatrix", sceneCamera->GetProjectionMatrix());
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexedInstanced(vertexArray, count);
-
 
 		shader->Unbind();
 		vertexArray->Unbind();
