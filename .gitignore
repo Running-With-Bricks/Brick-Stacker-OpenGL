@@ -1,5 +1,6 @@
 #Visual Studio files
-.vs/
+/.vscode/
+/.vs/
 **/*.sln
 **/*.vcxproj
 **/*.vcxproj.filters
