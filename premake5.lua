@@ -67,6 +67,8 @@ project "Brick-Stacker-OpenGL"
 		{
 			"BS_PLATFORM_WINDOWS"
 		}
+
+		files { "%{prj.location}/src/BrickStacker/Platform/Windows/resource.rc" }
 		
 		links
 		{
@@ -89,7 +91,7 @@ project "Brick-Stacker-OpenGL"
 		optimize "Off"
 
 	filter "configurations:Release"
-		defines "BS_Release"
+		defines "BS_RELEASE"
 		symbols "On"
 		optimize "On"
 
@@ -97,3 +99,7 @@ project "Brick-Stacker-OpenGL"
 		defines "BS_DISTRIBUTION"
 		symbols "Off"
 		optimize "On"
+
+	filter { "system:windows", "configurations:Distribute" }
+		kind "WindowedApp"
+		system "windows"

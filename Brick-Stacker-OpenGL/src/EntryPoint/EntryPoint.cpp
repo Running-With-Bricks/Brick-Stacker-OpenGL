@@ -7,10 +7,13 @@
 #include <iostream>
 #include <stdexcept>
 
+#ifdef BS_CUTOUT_CONSOLE && BS_PLATFORM_WINDOWS
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
 int main()
+#endif
 {
 	BrickStacker::Log::Init();
-	BrickStacker::Log::GetLogger()->trace("Started the Logger");
 	BrickStacker::Application& Application = BrickStacker::Application::Get();
 
 	try

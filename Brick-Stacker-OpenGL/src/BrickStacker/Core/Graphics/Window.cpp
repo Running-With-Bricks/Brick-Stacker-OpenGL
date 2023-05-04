@@ -2,6 +2,7 @@
 #include "Window.hpp"
 
 #include "BrickStacker/Application/Application.hpp"
+#include "stb_image/stb_image.h"
 
 namespace BrickStacker
 {
@@ -24,6 +25,10 @@ namespace BrickStacker
 		glfwSetWindowUserPointer(m_Window, this);
 		glfwMakeContextCurrent(m_Window);
 
+		GLFWimage icon{};
+		icon.pixels = stbi_load("./assets/icons/256x256.png", &icon.width, &icon.height, 0, 4);
+		glfwSetWindowIcon(m_Window, 1, &icon);
+
 		glfwMaximizeWindow(m_Window);
 		glfwSetFramebufferSizeCallback(m_Window, ResizeCallback);
 
@@ -31,6 +36,7 @@ namespace BrickStacker
 
 		glfwSwapInterval((int)m_VSync);
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
 
 		gladLoadGL();
 	}
