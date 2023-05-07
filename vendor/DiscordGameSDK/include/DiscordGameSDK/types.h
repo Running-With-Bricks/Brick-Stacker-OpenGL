@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint.h>
 #include "ffi.h"
 #include "event.h"
 #ifdef _WIN32
