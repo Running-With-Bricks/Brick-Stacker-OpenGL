@@ -19,6 +19,11 @@
 #define DISCORD_CALLBACK DISCORD_API
 
 #include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
 #include <string.h>
 #ifndef __cplusplus
 #include <stdbool.h>
@@ -1101,5 +1106,9 @@ static
 enum EDiscordResult DISCORD_API DiscordCreate(DiscordVersion version,
                                               struct DiscordCreateParams* params,
                                               struct IDiscordCore** result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
