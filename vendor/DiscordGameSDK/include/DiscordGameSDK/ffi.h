@@ -18,7 +18,6 @@
 
 #define DISCORD_CALLBACK DISCORD_API
 
-#include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
