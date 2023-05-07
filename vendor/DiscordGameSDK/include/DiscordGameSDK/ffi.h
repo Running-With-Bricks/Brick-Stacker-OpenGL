@@ -19,6 +19,7 @@
 #define DISCORD_CALLBACK DISCORD_API
 
 #ifdef __cplusplus
+using namespace std;
 extern "C" {
 #endif
 
