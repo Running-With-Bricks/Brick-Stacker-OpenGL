@@ -76,50 +76,27 @@ project "ImGui"
 project "GLFW"
 	kind "StaticLib"
 	language "C"
+   
 	staticruntime "On"
-
+	
 	location "./glfw"
-
+	
 	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
 	objdir ("bin-obj/" .. outputDir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.location}/src/glfw_config.h",
-		"%{prj.location}/src/context.c",
-		"%{prj.location}/src/init.c",
-		"%{prj.location}/src/input.c",
-		"%{prj.location}/src/monitor.c",
-		"%{prj.location}/src/vulkan.c",
-		"%{prj.location}/src/window.c"
-	}
-
+	files { "glfw/src/*.c", "glfw/include/GLFW/glfw3.h", "glfw/include/GLFW/glfw3native.h" }
+	
 	includedirs
 	{
 		"%{prj.location}/include/GLFW"
 	}
 
+	defines { "_CRT_SECURE_NO_WARNINGS" }
+
 	filter "system:windows"
-		systemversion "latest"
+	   defines { "_GLFW_WIN32" }
 
-		files
-		{
-			"%{prj.location}/src/win32_init.c",
-			"%{prj.location}/src/win32_joystick.c",
-			"%{prj.location}/src/win32_monitor.c",
-			"%{prj.location}/src/win32_time.c",
-			"%{prj.location}/src/win32_thread.c",
-			"%{prj.location}/src/win32_window.c",
-			"%{prj.location}/src/wgl_context.c",
-			"%{prj.location}/src/egl_context.c",
-			"%{prj.location}/src/osmesa_context.c"
-		}
-
-		defines 
-		{ 
-			"_GLFW_WIN32",
-			"_CRT_SECURE_NO_WARNINGS"
-		}
+	filter "system:linux"
+	   defines { "_GLFW_X11" }
 
 	filter "configurations:Debug"
 		runtime "Debug"

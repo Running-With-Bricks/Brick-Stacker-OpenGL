@@ -9,8 +9,7 @@ layout(location = 6) in vec3 transformCol2;
 layout(location = 7) in vec3 transformCol3;
 layout(location = 8) in vec3 transformCol4;
 
-uniform mat4 u_ViewMatrix;
-uniform mat4 u_ProjectionMatrix;
+uniform mat4 u_ViewProjectionMatrix;
 
 uniform sampler2D TopTexture;
 uniform sampler2D BottomTexture;
@@ -27,7 +26,7 @@ void main()
 	transform[2] = vec4(transformCol3, 0);
 	transform[3] = vec4(transformCol4, 1);
 
-	gl_Position = u_ProjectionMatrix * u_ViewMatrix * transform * vec4(position, 1.0);
+	gl_Position = u_ViewProjectionMatrix * transform * vec4(position, 1.0);
 	Color = color;
 	TexCoord = texCoord * tiling;
 	TexIndex = texIndex;

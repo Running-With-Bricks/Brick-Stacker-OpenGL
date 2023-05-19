@@ -20,7 +20,7 @@ namespace BrickStacker
 			return renderer;
 		}
 
-		void SetCamera(const Ref<Camera>& camera);
+		void SetCamera(const glm::mat4& viewProjectionMatrix);
 
 		void Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, int count);
 	private:
@@ -37,6 +37,6 @@ namespace BrickStacker
 		}
 		~Renderer() {}
 
-		Weak<Camera> m_SceneCamera;
+		glm::mat4 m_CameraViewProjection;
 	};
 }

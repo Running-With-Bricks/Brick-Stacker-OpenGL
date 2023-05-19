@@ -13,7 +13,9 @@
 #include "BrickStacker/Core/Input/Keyboard.hpp"
 #include "BrickStacker/Core/Input/Mouse.hpp"
 #include "BrickStacker/Core/Scene/Scene.hpp"
+#include "BrickStacker/Core/Scene/SceneSerializer.hpp"
 #include "BrickStacker/Core/Scene/Entity.hpp"
+#include "BrickStacker/Core/Scene/CameraController.hpp"
 
 #include "BrickStacker/Base/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
@@ -21,32 +23,6 @@
 
 namespace BrickStacker
 {
-	class Brick
-	{
-	public:
-		static Ref<Brick> Create(const std::string& name = "New Brick")
-		{ 
-			static uint32_t prevID{ 0 };
-			prevID++;
-			return CreateRef<Brick>(name, prevID);
-		}
-		Brick(const std::string& name, uint32_t ID)
-			: ID{ ID }
-		{
-			Name = name;
-		}
-
-		const uint32_t ID;
-		std::string Name = "Brick";
-		glm::vec3 Position{ 0 };
-		glm::vec3 Rotation{ 0 };
-		glm::vec3 Scale{ 1 };
-		glm::vec4 Color{ 1 };
-		bool Visible = true;
-	};
-
-
-
 	class Application
 	{
 	public:
@@ -65,7 +41,8 @@ namespace BrickStacker
 
 		void Draw();
 
-		bool IsFocusedOnViewport() { return m_ViewportFocused; };
+		Ref<Scene> GetFocusedScene() { return m_FocusedViewport ? m_Scene : nullptr; };
+		std::vector<Ref<Scene>> GetViewports() { return { m_Scene }; };
 
 	private:
 		Application();
@@ -73,7 +50,7 @@ namespace BrickStacker
 
 		void updateBricksInstancedData();
 
-		Window m_Window{ 800, 600, "Brick Stacker" };
+		Window m_Window{ 1920, 1080, "Brick Stacker" };
 
 		Ref<Shader> m_MainShader;
 		Ref<Shader> m_TestShader;
@@ -83,14 +60,15 @@ namespace BrickStacker
 
 		Ref<VertexArray> m_CubeVertexArray;
 
-		Ref<Camera> m_Camera;
 		Ref<Scene> m_Scene;
+		Entity m_Camera;
+		CameraController& m_CameraController = CameraController::Get();
 
 		Ref<Framebuffer> m_Framebuffer;
 		glm::vec2 m_ViewportSize{ 1920, 1080 };
 
 		float m_LoadTime;
-		bool m_ViewportFocused = false;
+		bool m_FocusedViewport = false;
 
 		Timer m_Timer{};
 		float m_LastFrame{ 1 };
@@ -99,8 +77,6 @@ namespace BrickStacker
 		Renderer& m_Renderer = Renderer::Get();
 		Profiler& m_Profiler = Profiler::Get();
 
-		std::vector<Ref<Brick>> m_Bricks;
-		std::vector<Ref<Brick>> m_SortedBricks;
-		Ref<Brick> m_SelectedBrick;
+		Entity m_SelectedEntity;
 	};
 }

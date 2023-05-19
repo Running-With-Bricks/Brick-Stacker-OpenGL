@@ -52,6 +52,17 @@ namespace BrickStacker
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
+		Entity Clone()
+		{
+
+			return m_Scene->DuplicateEntity(*this);
+		}
+
+		void Destroy()
+		{
+			m_Scene->DestroyEntity(*this);
+		}
+
 		operator bool() const { return m_EntityHandle != entt::null; }
 		operator entt::entity() const { return m_EntityHandle; }
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }

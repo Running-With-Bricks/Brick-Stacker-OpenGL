@@ -26,6 +26,7 @@ namespace BrickStacker
 
 		void SetPrimaryCameraEntity(Entity entity);
 		Entity GetPrimaryCameraEntity();
+		Camera& GetPrimaryCameraComponent();
 
 		void OnUpdate(float deltaTime);
 		void RenderScene();
@@ -39,6 +40,7 @@ namespace BrickStacker
 	private:
 		entt::registry m_Registry;
 		entt::entity m_PrimaryCamera;
+
 
 
 		friend class Entity;

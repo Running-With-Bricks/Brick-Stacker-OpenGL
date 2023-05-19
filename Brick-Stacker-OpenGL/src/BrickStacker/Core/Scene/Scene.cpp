@@ -11,6 +11,9 @@ namespace BrickStacker
 
 	Scene::~Scene()
 	{
+		//m_KeyboardCallback->Disconnect();
+		//m_MouseButtonCallback->Disconnect();
+		//m_MousePositionCallback->Disconnect();
 	}
 
 	template<typename... Component>
@@ -54,7 +57,6 @@ namespace BrickStacker
 
 	void Scene::OnUpdate(float deltaTime)
 	{
-
 		// Render
 		RenderScene();
 	}
@@ -66,17 +68,15 @@ namespace BrickStacker
 
 	Entity Scene::GetPrimaryCameraEntity()
 	{
-		BS_INFO("{0}", m_Registry.valid(m_PrimaryCamera));
 		return Entity(m_PrimaryCamera, this);
-		//auto view = m_Registry.view<CameraComponent>();
-		//for (auto entity : view)
-		//{
-		//	const auto& camera = view.get<CameraComponent>(entity);
-		//	if (camera.Primary)
-		//		return Entity{ entity, this };
-		//}
-		//return {};
 	}
+
+	Camera& Scene::GetPrimaryCameraComponent()
+	{
+		return GetPrimaryCameraEntity().GetComponent<CameraComponent>();
+	}
+
+
 
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
@@ -96,6 +96,8 @@ namespace BrickStacker
 			if (tc.Name == name)
 				return Entity{ entity, this };
 		}
+
+		BS_ERROR("Couldn't find Entity with name \"{0}\"", name);
 		return {};
 	}
 

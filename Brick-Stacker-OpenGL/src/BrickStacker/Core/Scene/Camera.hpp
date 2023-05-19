@@ -8,6 +8,8 @@
 
 namespace BrickStacker
 {
+	class CameraController;
+
 	enum class CameraType
 	{
 		Perspective = 0,
@@ -47,7 +49,7 @@ namespace BrickStacker
 		void SetOrthographicProjection(FrustumPlanes planes);
 		void SetOrthographicProjection(float leftPlane, float rightPlane, float topPlane, float bottomPlane, float nearPlane, float farPlane);
 
-		void SetPerspectiveProjection(float fovy, float aspect, float near, float far);
+		void SetPerspectiveProjection(float fovy, float aspect, float nearPlane, float farPlane);
 
 		const glm::mat4 GetWorldMatrix() const
 		{
@@ -88,8 +90,6 @@ namespace BrickStacker
 		void SetViewYXZ(glm::vec3 position, glm::vec3 rotation);
 		void SetViewRawYXZ(glm::vec3 position, glm::vec3 rotation);
 
-		void Update(float deltaTime);
-
 		CameraType Type{ CameraType::Perspective };
 		CameraBehaviour Behaviour{ CameraBehaviour::Free };
 
@@ -101,39 +101,14 @@ namespace BrickStacker
 		float Zoom = 1;
 		FrustumPlanes Planes{};
 
-		bool ListenToKeyboardInput = true;
-		bool ListenToMouseInput = true;
-
-		float AccelerateAfter = 5;
-		float Acceleration = 0.05f;
-		float Speed = 15.f;
-		float ShiftMultiplier = 6;
-		bool IgnoreDeltaTime = false;
-
 		float Distance = 10;
-		float Sensitivity = 0.4f;
-		float ScrollSensitivity = 2.5f;
-		bool InvertX = false;
-		bool InvertY = false;
-		bool InvertScroll = false;
 
 	private:
 		glm::mat4 m_ProjectionMatrix{ 1 };
 		glm::mat4 m_ViewMatrix{ 1 };
-		Ref<KeyCallback> m_KeyboardCallback;
-		Ref<MouseButtonCallback> m_MouseButtonCallback;
-		Ref<MousePositionCallback> m_MousePositionCallback;
-		Ref<MouseScrollCallback> m_MouseScrollCallback;
-
-		bool m_PrevViewportFocused = false;
-		bool m_Moving = false;
-		bool m_PrevMoving = false;
-		float m_MovementTime;
-		glm::vec3 m_MovementVector{ 0, 0, 0 };
-		bool m_Rotating = false;
-		bool m_PrevRotating = false;
-		glm::vec2 m_PrevMousePos{ 0 };
 
 		glm::vec3 m_OrbitRotation{ 0, 0, 0 };
+
+		friend class CameraController;
 	};
 }
