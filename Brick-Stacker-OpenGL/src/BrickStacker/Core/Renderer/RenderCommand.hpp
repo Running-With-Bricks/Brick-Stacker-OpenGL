@@ -17,6 +17,11 @@ namespace BrickStacker
 			glClearColor(color.r, color.g, color.b, color.a);
 		}
 
+		inline static void SetClearColor(const glm::vec3& color, float alpha)
+		{
+			glClearColor(color.r, color.g, color.b, alpha);
+		}
+
 		inline static void Clear()
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

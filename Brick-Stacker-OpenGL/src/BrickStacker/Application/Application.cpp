@@ -428,10 +428,15 @@ namespace BrickStacker
 			{
 				if (ImGui::TreeNodeEx("Lighting", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
+					auto prevSkyColor = m_SelectedEntity.GetComponent<LightingComponent>().SkyColor;
+
 					ImGui::ColorEdit3("Sky Color", &m_SelectedEntity.GetComponent<LightingComponent>().SkyColor.x);
 					ImGui::ColorEdit3("Ambient Color", &m_SelectedEntity.GetComponent<LightingComponent>().AmbientColor.x);
 					ImGui::DragUint("Sun Intensity", &m_SelectedEntity.GetComponent<LightingComponent>().SunIntensity, 0.1f, 0, UINT32_MAX, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 					ImGui::TreePop();
+
+					if (prevSkyColor != m_SelectedEntity.GetComponent<LightingComponent>().SkyColor)
+						RenderCommand::SetClearColor(m_SelectedEntity.GetComponent<LightingComponent>().SkyColor, 1);
 				}
 			}
 
