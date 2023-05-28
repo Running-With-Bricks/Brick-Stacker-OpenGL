@@ -105,10 +105,9 @@ namespace BrickStacker
 		m_CubeVertexArray->AddVertexBuffer(cubeInstancedVertexBuffer);
 		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
-		m_Scene = CreateRef<Scene>();
-		m_Camera = m_Scene->CreateEntity("Camera");
-		m_Camera.AddComponent<CameraComponent>();
-		m_Camera.GetComponent<CameraComponent>().camera.Position = { 0, 1, -5 };
+		m_Scene = SceneSerializer::GetDefaultScene();
+		m_Camera = m_Scene->FindEntityByName("Camera");
+		RenderCommand::SetClearColor(m_Scene->FindEntityByName("Lighting").GetComponent<LightingComponent>().SkyColor, 1);
 
 		FramebufferSpecifications fbSpecs;
 		fbSpecs.Width = 1024;
@@ -117,11 +116,6 @@ namespace BrickStacker
 
 		m_TopBrickTexture = Texture2D::Create("./assets/images/stud_top.png");
 		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");
-			 
-		m_Timer.Reset();
-		SceneSerializer::Deserialize("Map.brk", m_Scene);
-		m_Timer.Stop();
-		m_LoadTime = m_Timer.Elapsed();
 	}
 
 	Application::~Application()
@@ -131,7 +125,6 @@ namespace BrickStacker
 
 	void Application::Run()
 	{
-		RenderCommand::SetClearColor({ .5f, .5f, .5f, 1 });
 		RenderCommand::Clear();
 
 		m_Window.Update();
@@ -143,7 +136,6 @@ namespace BrickStacker
 		Keyboard::Setup();
 		Mouse::Setup();
 
-		m_Scene->SetPrimaryCameraEntity(m_Camera);
 		m_Renderer.SetCamera(m_Scene->GetPrimaryCameraComponent().GetViewMatrix() * m_Scene->GetPrimaryCameraComponent().GetProjectionMatrix());
 
 		while (!m_Window.ShouldClose())
@@ -244,8 +236,25 @@ namespace BrickStacker
 			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New", "Ctrl+N")) {}
-				if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-				if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+				if (ImGui::MenuItem("Open", "Ctrl+O"))
+				{
+					if (auto str = FileDialogs::OpenFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
+					{
+						m_Timer.Reset();
+						for (auto& entity : m_Scene->GetAllEntitiesWith<BrickComponent>())
+							Entity(entity, m_Scene.get()).Destroy();
+						m_SelectedEntity = {entt::null, nullptr};
+
+						SceneSerializer::Deserialize(str, m_Scene);
+						m_Timer.Stop();
+						m_LoadTime = m_Timer.Elapsed();
+					};
+				}
+				if (ImGui::MenuItem("Save", "Ctrl+S"))
+				{
+					if (auto str = FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
+						SceneSerializer::Serialize(str, m_Scene);
+				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Edit"))
@@ -411,8 +420,6 @@ namespace BrickStacker
 					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
 						{
 						ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Position.x, .1f);
-
-					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
 						ImGui::DragFloat3("Rotation", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Rotation.x, .5f);
 						}
 					else if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)

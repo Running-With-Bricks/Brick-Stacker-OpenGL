@@ -1,6 +1,6 @@
 #include "pch.hpp"
 #include "SceneSerializer.hpp"
-#include "Entity.hpp"
+#include "BrickStacker/Core/Renderer/RenderCommand.hpp"
 
 namespace std
 {
@@ -32,28 +32,8 @@ namespace BrickStacker
 			bool completedSetup{ false };
 			Entity currentBrick;
 
-			auto LightComponents = ActiveScene->GetAllEntitiesWith<LightingComponent>();
-			Entity Lighting;
-			if (LightComponents.size() == 0)
-			{
-				Lighting = ActiveScene->CreateEntity("Lighting");
-				Lighting.AddComponent<LightingComponent>();
-			}
-			else
-				Lighting = Entity(LightComponents[0], ActiveScene.get());
-
-			auto BaseplateComponents = ActiveScene->GetAllEntitiesWith<BaseplateComponent, ColorComponent>();
-			Entity Baseplate;
-			if (BaseplateComponents.size() == 0)
-			{
-				Baseplate = ActiveScene->CreateEntity("Baseplate");
-				Baseplate.AddComponent<BaseplateComponent>();
-				Baseplate.AddComponent<ColorComponent>(glm::vec4(0.20f, 0.51f, 0.14f, 1));
-			}
-			else
-			{
-				Baseplate = Entity(BaseplateComponents.front(), ActiveScene.get());
-			}
+			Entity Lighting{ ActiveScene->GetAllEntitiesWith<LightingComponent>().back(), ActiveScene.get() };
+			Entity Baseplate{ ActiveScene->GetAllEntitiesWith<BaseplateComponent>().back(), ActiveScene.get() };
 
 			while (std::getline(mapFile, line))
 			{
@@ -81,11 +61,12 @@ namespace BrickStacker
 							//Sky Color
 							glm::vec3 color{ 0 };
 
-							std::sscanf(separated[2].c_str(), "%f", &color.r);
+							std::sscanf(separated[0].c_str(), "%f", &color.r);
 							std::sscanf(separated[1].c_str(), "%f", &color.g);
-							std::sscanf(separated[0].c_str(), "%f", &color.b);
+							std::sscanf(separated[2].c_str(), "%f", &color.b);
 
 							Lighting.GetComponent<LightingComponent>().SkyColor = color;
+							RenderCommand::SetClearColor(color, 1);
 						}
 					}
 					else if (separated.size() == 4)
@@ -151,7 +132,7 @@ namespace BrickStacker
 							transform.Scale.z = tempXScale;
 						}
 
-						transform.Rotation.y = static_cast<float>(rot);
+						transform.Rotation = rot;
 					}
 				}
 				else if (separated.size() == 10)
@@ -179,7 +160,7 @@ namespace BrickStacker
 					auto Brick = ActiveScene->CreateEntity("Brick");
 					Brick.AddComponent<BrickComponent>();
 					Brick.AddComponent<ColorComponent>(color);
-					Brick.AddComponent<TransformComponent>(position, glm::vec3(0), scale);
+					Brick.AddComponent<TransformComponent>(position, 0, scale);
 
 					currentBrick = Brick;
 				}
@@ -189,5 +170,73 @@ namespace BrickStacker
 			BS_ERROR("Couldn't open {0} to load the map");
 
 		mapFile.close();
+	}
+	void SceneSerializer::Serialize(const std::string& FilePath, Ref<Scene> ActiveScene)
+	{
+		std::ofstream outFile(FilePath);
+		if (outFile.is_open()) {
+			const LightingComponent& lc = Entity(ActiveScene->GetAllEntitiesWith<LightingComponent>().back(), ActiveScene.get()).GetComponent<LightingComponent>();
+			auto b = Entity(ActiveScene->GetAllEntitiesWith<BaseplateComponent>().back(), ActiveScene.get());
+			const auto& bc = b.GetComponent<BaseplateComponent>();
+			const auto& cc = b.GetComponent<ColorComponent>();
+
+			outFile << "B R I C K  W O R K S H O P  V0.2.0.0" << std::endl;
+			outFile << "Created_With_Brick-Stacker" << std::endl;
+			outFile << lc.AmbientColor.b << " " << lc.AmbientColor.g << " " << lc.AmbientColor.r << std::endl;
+			outFile << cc.Color.b << " " << cc.Color.g << " " << cc.Color.r << " " << cc.Color.a << std::endl;
+			outFile << lc.SkyColor.r << " " << lc.SkyColor.g << " " << lc.SkyColor.b << std::endl;
+			outFile << bc.Size << std::endl;
+			outFile << bc.Size << std::endl;
+			outFile << std::endl << std::endl;
+
+			auto& view = ActiveScene->GetAllEntitiesWith<BrickComponent>();
+			for (auto& entityIT = view.rbegin(); entityIT != view.rend(); entityIT++)
+			{
+				auto entity = Entity(*entityIT, ActiveScene.get());
+				const auto& tc = entity.GetComponent<TransformComponent>();
+				const auto& bcc = entity.GetComponent<ColorComponent>();
+
+				auto scl = tc.Scale;
+				if ((tc.Rotation % 180) != 0)
+				{
+					float tempXScale = static_cast<float>(scl.x);
+					scl.x = scl.z;
+					scl.z = tempXScale;
+				}
+				const auto pos = tc.Position - scl * 0.5f;
+
+				outFile << pos.x << " " << pos.z << " " << pos.y << " " << scl.x << " " << scl.z << " " << scl.y << " " << bcc.Color.r << " " << bcc.Color.g << " " << bcc.Color.b << " " << bcc.Color.a << std::endl;
+				outFile << "\t+NAME " << entity.GetComponent<NameComponent>().Name << std::endl;
+				if (tc.Rotation != 0)
+					outFile << "\t+ROT " << tc.Rotation << std::endl;
+			}
+			outFile.close();
+			BS_INFO("Writen Scene into {0}", FilePath);
+		}
+		else
+			BS_ERROR("Couldn't open {0} to save the map");
+	}
+
+	Ref<Scene> SceneSerializer::GetDefaultScene()
+	{
+		static Ref<Scene> defaultScene;
+
+		if (!defaultScene.get())
+		{
+			defaultScene = CreateRef<Scene>();
+			auto camera = defaultScene->CreateEntity("Camera");
+			camera.AddComponent<CameraComponent>();
+			camera.GetComponent<CameraComponent>().camera.Position = { 0, 1, -5 };
+			defaultScene->SetPrimaryCameraEntity(camera);
+
+			auto Baseplate = defaultScene->CreateEntity("Baseplate");
+			Baseplate.AddComponent<BaseplateComponent>();
+			Baseplate.AddComponent<ColorComponent>(glm::vec4(0.20f, 0.51f, 0.14f, 1));
+
+			auto Lighting = defaultScene->CreateEntity("Lighting");
+			Lighting.AddComponent<LightingComponent>();
+		}
+
+		return defaultScene;
 	}
 }
