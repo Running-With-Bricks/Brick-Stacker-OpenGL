@@ -19,6 +19,7 @@ namespace BrickStacker
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 		m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), NULL, NULL);
 
@@ -29,7 +30,6 @@ namespace BrickStacker
 		icon.pixels = stbi_load("./assets/icons/256x256.png", &icon.width, &icon.height, 0, 4);
 		glfwSetWindowIcon(m_Window, 1, &icon);
 
-		glfwMaximizeWindow(m_Window);
 		glfwSetFramebufferSizeCallback(m_Window, ResizeCallback);
 
 		glfwSetWindowSizeLimits(m_Window, 266, 200, GLFW_DONT_CARE, GLFW_DONT_CARE);

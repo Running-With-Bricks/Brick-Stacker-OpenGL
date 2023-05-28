@@ -50,7 +50,7 @@ namespace BrickStacker
 
 		void updateBricksInstancedData();
 
-		Window m_Window{ 1920, 1080, "Brick Stacker" };
+		Window m_Window{ 1080, 608, "Brick Stacker" };
 
 		Ref<Shader> m_MainShader;
 		Ref<Shader> m_TestShader;
