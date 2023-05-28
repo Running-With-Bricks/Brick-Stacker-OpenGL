@@ -1,8 +1,6 @@
 #include "pch.hpp"
 #include "Application.hpp"
 
-#include "BrickStacker/Core/Scene/Entity.hpp"
-
 namespace BrickStacker
 {
 	Application::Application()
@@ -191,11 +189,9 @@ namespace BrickStacker
 
 		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent>();
 	
-		for (auto i = bricks.begin(); i != bricks.end(); ++i)
+		for (auto BrickEntityID : bricks)
 		{
-			const auto& brick = *i;
-			auto BrickEntity = Entity(brick, m_Scene.get());
-
+			Entity BrickEntity{ BrickEntityID, m_Scene.get() };
 			if (!BrickEntity.GetComponent<ColorComponent>().Visible)
 				continue;
 
@@ -224,7 +220,7 @@ namespace BrickStacker
 	void Application::Draw()
 	{
 		auto view = m_Scene->GetAllEntitiesWith<NameComponent>();
-		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent, TransformComponent, ColorComponent>();
+		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent>();
 
 		static bool updateFontSize = false;
 		static int fontSize = 14;
@@ -289,14 +285,10 @@ namespace BrickStacker
 
 		ImGui::Begin("Explorer");
 		
-		//Those -1 are nessasery trust me
-		//idk how to spell ^
-		for (auto i = view.end() - 1; i != view.begin() - 1; --i)
+		for (auto& currentEntityIT = view.rbegin(); currentEntityIT != view.rend(); currentEntityIT++)
 		{
-			auto brick = *i;
-			auto currentEntity = Entity(brick, m_Scene.get());
-		
-			ImGui::PushID((int)brick);
+			Entity currentEntity{ *currentEntityIT, m_Scene.get() };
+			ImGui::PushID((int)*currentEntityIT);
 
 			if (ImGui::TreeNodeEx(currentEntity.GetComponent<NameComponent>().Name.c_str(), (m_SelectedEntity == currentEntity ? ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf))
 			{
@@ -334,6 +326,7 @@ namespace BrickStacker
 
 		ImGui::Begin("Properties");
 
+		ImGui::PushID((int)m_SelectedEntity);
 		if (m_SelectedEntity)
 		{
 			if (m_SelectedEntity.HasComponent<NameComponent>())
@@ -345,6 +338,7 @@ namespace BrickStacker
 
 					ImGui::TreePop();
 				}
+				ImGui::Separator();
 			}
 			if (m_SelectedEntity.HasComponent<BrickComponent>())
 			{
@@ -361,6 +355,7 @@ namespace BrickStacker
 					ImGui::DragUint("Size", &m_SelectedEntity.GetComponent<BaseplateComponent>().Size, 0.1f, 0, UINT32_MAX, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 					ImGui::TreePop();
 				}
+				ImGui::Separator();
 			}
 			if (m_SelectedEntity.HasComponent<CameraComponent>())
 			{
@@ -407,18 +402,25 @@ namespace BrickStacker
 
 					ImGui::TreePop();
 				}
+				ImGui::Separator();
 
+				if ((CameraBehaviour)behaviour != CameraBehaviour::None)
+				{
 				if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
+						{
 						ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Position.x, .1f);
 
 					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
 						ImGui::DragFloat3("Rotation", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Rotation.x, .5f);
+						}
 					else if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
 						ImGui::DragFloat3("Target Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.TargetPos.x, .1f);
 
 					ImGui::TreePop();
+				}
+					ImGui::Separator();
 				}
 
 				m_SelectedEntity.GetComponent<CameraComponent>().camera.Type = (CameraType)type;
@@ -438,6 +440,7 @@ namespace BrickStacker
 					if (prevSkyColor != m_SelectedEntity.GetComponent<LightingComponent>().SkyColor)
 						RenderCommand::SetClearColor(m_SelectedEntity.GetComponent<LightingComponent>().SkyColor, 1);
 				}
+				ImGui::Separator();
 			}
 
 			if (m_SelectedEntity.HasComponent<TransformComponent>())
@@ -450,6 +453,7 @@ namespace BrickStacker
 
 					ImGui::TreePop();
 				}
+				ImGui::Separator();
 			}
 			if (m_SelectedEntity.HasComponent<ColorComponent>())
 			{
@@ -460,8 +464,10 @@ namespace BrickStacker
 
 					ImGui::TreePop();
 				}
+				ImGui::Separator();
 			}
 		}
+		ImGui::PopID();
 		ImGui::End();
 
 		m_ImGui.EndFrame();
@@ -485,9 +491,9 @@ namespace BrickStacker
 		m_TopBrickTexture->Bind(0);
 		m_BottomBrickTexture->Bind(1);
 
-		if (bricks.size())
+		if (auto size = bricks.size(); size)
 		{
-			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, bricks.size());
+			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, size);
 		}
 
 		m_Framebuffer->Unbind();

@@ -31,17 +31,15 @@ namespace BrickStacker
 		void OnUpdate(float deltaTime);
 		void RenderScene();
 
-		template<typename... Components>
+		template<typename Component>
 		auto GetAllEntitiesWith()
 		{
-			return m_Registry.view<Components...>();
+			return m_Registry.view<Component>();
 		}
 
 	private:
 		entt::registry m_Registry;
 		entt::entity m_PrimaryCamera;
-
-
 
 		friend class Entity;
 	};

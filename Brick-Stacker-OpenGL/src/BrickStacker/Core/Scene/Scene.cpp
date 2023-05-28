@@ -76,8 +76,6 @@ namespace BrickStacker
 		return GetPrimaryCameraEntity().GetComponent<CameraComponent>();
 	}
 
-
-
 	Entity Scene::DuplicateEntity(Entity entity)
 	{
 		// Copy name because we're going to modify component data structure
