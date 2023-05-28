@@ -22,23 +22,23 @@ namespace BrickStacker
 	struct TransformComponent
 	{
 		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
+		int Rotation = 0;
 		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
 		TransformComponent(const glm::vec3& position)
 			: Position(position) {}
-		TransformComponent(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+		TransformComponent(const glm::vec3& position, int rotation, const glm::vec3& scale)
 			: Position(position), Rotation(rotation), Scale(scale) {}
 
 		glm::mat4 GetTransform() const
 		{
-			const float x{ glm::radians(Rotation.x) }, y{ glm::radians(Rotation.y) }, z{ glm::radians(Rotation.z) };
-			const float c3 = glm::cos(z);
-			const float s3 = glm::sin(z);
-			const float c2 = glm::cos(x);
-			const float s2 = glm::sin(x);
+			const float y{ glm::radians((float)Rotation) };
+			const float c3 = 1;
+			const float s3 = 0;
+			const float c2 = 1;
+			const float s2 = 0;
 			const float c1 = glm::cos(y);
 			const float s1 = glm::sin(y);
 			glm::mat4 brickMatrix = glm::mat4{
@@ -97,6 +97,7 @@ namespace BrickStacker
 	{
 		Shape Model = Shape::Cube;
 		uint32_t ModelID = 0;
+
 
 		BrickComponent() = default;
 		BrickComponent(const BrickComponent&) = default;

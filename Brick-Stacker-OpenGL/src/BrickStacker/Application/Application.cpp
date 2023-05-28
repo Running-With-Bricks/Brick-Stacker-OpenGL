@@ -445,7 +445,7 @@ namespace BrickStacker
 				if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<TransformComponent>().Position.x, .1f);
-					ImGui::DragFloat3("Rotation", &m_SelectedEntity.GetComponent<TransformComponent>().Rotation.x, .5f);
+					ImGui::DragInt("Rotation", &m_SelectedEntity.GetComponent<TransformComponent>().Rotation, .5f);
 					ImGui::DragFloat3("Scale", &m_SelectedEntity.GetComponent<TransformComponent>().Scale.x, .1f);
 
 					ImGui::TreePop();
