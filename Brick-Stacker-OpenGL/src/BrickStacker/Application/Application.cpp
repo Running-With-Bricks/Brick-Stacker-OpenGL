@@ -115,7 +115,7 @@ namespace BrickStacker
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
 		m_TopBrickTexture = Texture2D::Create("./assets/images/stud_top.png");
-		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");
+		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");		 
 	}
 
 	Application::~Application()
@@ -298,10 +298,14 @@ namespace BrickStacker
 		{
 			Entity currentEntity{ *currentEntityIT, m_Scene.get() };
 			ImGui::PushID((int)*currentEntityIT);
-
-			if (ImGui::TreeNodeEx(currentEntity.GetComponent<NameComponent>().Name.c_str(), (m_SelectedEntity == currentEntity ? ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf))
+		
+			auto treeOpened = ImGui::TreeNodeEx("", (m_SelectedEntity == currentEntity ? ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf);
+			auto isClicked = ImGui::IsItemClicked();
+			ImGui::SameLine(); ImGui::Text(currentEntity.GetName().c_str());
+			auto isDoubleClicked = ImGui::IsMouseDoubleClicked(0);
+			if (treeOpened)
 			{
-				if (ImGui::IsItemClicked())
+				if (isClicked)
 				{
 					m_SelectedEntity = currentEntity;
 				}
@@ -415,18 +419,18 @@ namespace BrickStacker
 
 				if ((CameraBehaviour)behaviour != CameraBehaviour::None)
 				{
-				if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
+					if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
 						{
-						ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Position.x, .1f);
-						ImGui::DragFloat3("Rotation", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Rotation.x, .5f);
+							ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Position.x, .1f);
+							ImGui::DragFloat3("Rotation", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Rotation.x, .5f);
 						}
-					else if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
-						ImGui::DragFloat3("Target Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.TargetPos.x, .1f);
+						else if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
+							ImGui::DragFloat3("Target Position", &m_SelectedEntity.GetComponent<CameraComponent>().camera.TargetPos.x, .1f);
 
-					ImGui::TreePop();
-				}
+						ImGui::TreePop();
+					}
 					ImGui::Separator();
 				}
 
