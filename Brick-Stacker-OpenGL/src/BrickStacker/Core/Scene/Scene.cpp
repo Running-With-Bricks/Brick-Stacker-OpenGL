@@ -1,6 +1,5 @@
 #include "pch.hpp"
 #include "Scene.hpp"
-
 #include "Entity.hpp"
 
 namespace BrickStacker
@@ -48,6 +47,24 @@ namespace BrickStacker
 		entity.AddComponent<NameComponent>(name);
 
 		return entity;
+	}
+
+	Entity Scene::CreateBrick(const std::string& name)
+	{
+		auto Brick = CreateEntity(!name.empty() ? name : std::string("Brick-")+std::to_string(m_Registry.size()));
+		Brick.AddComponent<BrickComponent>();
+		Brick.AddComponent<ColorComponent>(glm::vec4(0.5f, 0.5f, 0.5f, 1));
+		Brick.AddComponent<TransformComponent>();
+
+		return Brick;
+	}
+
+	Entity Scene::CreateCamera(const std::string& name)
+	{
+		auto camera = CreateEntity(!name.empty() ? name : "Camera");
+		camera.AddComponent<CameraComponent>();
+
+		return camera;
 	}
 
 	void Scene::DestroyEntity(Entity entity)

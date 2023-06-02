@@ -39,7 +39,7 @@ namespace BrickStacker
 	class Profiler
 	{
 	public:
-		static constexpr size_t s_FPSBufferSize = 100;
+		static constexpr size_t s_MsBufferSize = 100;
 
 		static Profiler& Get()
 		{
@@ -47,23 +47,23 @@ namespace BrickStacker
 			return profiler;
 		}
 
-		void AddFrame(float FPS)
+		void AddFrame(float ms)
 		{
 			m_FrameCount++;
-			m_HighestFPS = FPS > m_HighestFPS ? FPS : m_HighestFPS;
-			m_FPSBuffer.PushBack(FPS);			
+			m_LowestMs = ms < m_LowestMs ? ms : m_LowestMs;
+			m_MsBuffer.PushBack(ms);
 		};
 
 		const size_t FrameCount() const { return m_FrameCount; };
-		const float HighestFPS() const { return m_HighestFPS; };
+		const float LowestMs() const { return m_LowestMs; };
 
-		const CircularBuffer<float, s_FPSBufferSize>& GetFPSBuffer() const { return m_FPSBuffer; };
+		const CircularBuffer<float, s_MsBufferSize>& GetFPSBuffer() const { return m_MsBuffer; };
 	private:
 		Profiler() = default;
 		~Profiler() = default;
 
 		size_t m_FrameCount = 0;
-		float m_HighestFPS = 0;
-		CircularBuffer<float, s_FPSBufferSize> m_FPSBuffer;
+		float m_LowestMs= 1000;
+		CircularBuffer<float, s_MsBufferSize> m_MsBuffer;
 	};
 }

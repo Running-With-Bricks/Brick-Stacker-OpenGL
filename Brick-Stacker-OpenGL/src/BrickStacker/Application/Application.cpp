@@ -128,7 +128,7 @@ namespace BrickStacker
 		RenderCommand::Clear();
 
 		m_Window.Update();
-		m_Window.SetVSync(false);
+		m_Window.SetVSync(true);
 
 		m_Discord.SetActivityDetails("Brick Stacking, Brick Build Together");
 		m_Discord.SetActivityState("Editing Map.brk");
@@ -145,7 +145,7 @@ namespace BrickStacker
 			m_Window.Update();
 			m_Discord.Update();
 
-			m_Profiler.AddFrame(1.0f / m_LastFrame);
+			m_Profiler.AddFrame(m_LastFrame);
 
 			Draw();
 
@@ -262,7 +262,8 @@ namespace BrickStacker
 				if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
 				if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {}  // Disabled item
 				ImGui::Separator();
-				if (ImGui::MenuItem("Add Brick", "Shift+A")) {}
+				if (ImGui::MenuItem("Add Brick", "Ctrl+A")) { m_Scene->CreateBrick(); }
+				if (ImGui::MenuItem("Add Camera", NULL)) { m_Scene->CreateCamera(); }
 				ImGui::Separator();
 				if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
 				if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
@@ -316,10 +317,9 @@ namespace BrickStacker
 		ImGui::End();
 		
 		ImGui::Begin("Debug");
-		ImGui::Text("FPS: %.1f", m_Profiler.GetFPSBuffer().Back());
-		ImGui::Text("Actual FPS: %.1f", m_Profiler.GetFPSBuffer().Current());
-		ImGui::Text("Average FPS: %.1f", m_Profiler.GetFPSBuffer().Average());
-		ImGui::Text("Max FPS: %.1f", m_Profiler.HighestFPS());
+		ImGui::Text("Actual ms: %.3fms", m_Profiler.GetFPSBuffer().Current());
+		ImGui::Text("Average ms: %.3fms", m_Profiler.GetFPSBuffer().Average());
+		ImGui::Text("Lowest ms: %.3fms", m_Profiler.LowestMs());
 		ImGui::Text("Frame Count: %d", m_Profiler.FrameCount());
 		ImGui::Separator();
 		ImGui::Text("Map load time: %.3fs", m_LoadTime);
@@ -342,25 +342,37 @@ namespace BrickStacker
 		ImGui::PushID((int)m_SelectedEntity);
 		if (m_SelectedEntity)
 		{
-			if (m_SelectedEntity.HasComponent<NameComponent>())
-			{
+
 				if (ImGui::TreeNodeEx("Data", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					//ImGui::LabelText("##n", "Name"); ImGui::SameLine(NULL, 1);
+				if (m_SelectedEntity.HasComponent<NameComponent>())
 					ImGui::InputText("Name", &m_SelectedEntity.GetComponent<NameComponent>().Name);
+
+				//Shit ass code
+				if (m_SelectedEntity.HasComponent<BrickComponent>())
+					ImGui::LabelText("Class", "Brick");
+				else if (m_SelectedEntity.HasComponent<BaseplateComponent>())
+					ImGui::LabelText("Class", "Baseplate");
+				else if (m_SelectedEntity.HasComponent<CameraComponent>())
+					ImGui::LabelText("Class", "Camera");
+				else if (m_SelectedEntity.HasComponent<LightingComponent>())
+					ImGui::LabelText("Class", "Lighting");
+				else
+					ImGui::LabelText("Class", "Undefined");
 
 					ImGui::TreePop();
 				}
 				ImGui::Separator();
-			}
-			if (m_SelectedEntity.HasComponent<BrickComponent>())
-			{
+
 				/// Disabled cuz no other shapes other than Cube so yeah
-				//if (ImGui::TreeNodeEx("Brick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+			//if (m_SelectedEntity.HasComponent<BrickComponent>())
 				//{
+			//	if (ImGui::TreeNodeEx("Brick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+			//	{
 				//	
+			//	}
 				//}
-			}
 			if (m_SelectedEntity.HasComponent<BaseplateComponent>())
 			{
 				if (ImGui::TreeNodeEx("Baseplate", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
@@ -369,8 +381,16 @@ namespace BrickStacker
 					ImGui::TreePop();
 				}
 				ImGui::Separator();
+				if (ImGui::TreeNodeEx("Color", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::ColorEdit3("Color", &m_SelectedEntity.GetComponent<BaseplateComponent>().Color.x);
+					ImGui::Checkbox("Visible", &m_SelectedEntity.GetComponent<BaseplateComponent>().Visible);
+
+					ImGui::TreePop();
+				}
+				ImGui::Separator();
 			}
-			if (m_SelectedEntity.HasComponent<CameraComponent>())
+			else if (m_SelectedEntity.HasComponent<CameraComponent>())
 			{
 				int type = (int)m_SelectedEntity.GetComponent<CameraComponent>().camera.Type;
 				int behaviour = (int)m_SelectedEntity.GetComponent<CameraComponent>().camera.Behaviour;
@@ -434,10 +454,18 @@ namespace BrickStacker
 					ImGui::Separator();
 				}
 
+				if (m_Scene->GetPrimaryCameraEntity() != m_SelectedEntity)
+				{
+					if (ImGui::Button("Set as Primary Camera"))
+						m_Scene->SetPrimaryCameraEntity(m_SelectedEntity);
+				}
+				else
+					ImGui::Text("This is a Primary Camera");
+
 				m_SelectedEntity.GetComponent<CameraComponent>().camera.Type = (CameraType)type;
 				m_SelectedEntity.GetComponent<CameraComponent>().camera.Behaviour = (CameraBehaviour)behaviour;
 			}
-			if (m_SelectedEntity.HasComponent<LightingComponent>())
+			else if (m_SelectedEntity.HasComponent<LightingComponent>())
 			{
 				if (ImGui::TreeNodeEx("Lighting", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{

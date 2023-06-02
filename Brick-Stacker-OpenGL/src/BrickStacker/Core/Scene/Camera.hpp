@@ -95,9 +95,9 @@ namespace BrickStacker
 
 		float Aspect{ 1 };
 		float FOV{ 70 };
-		glm::vec3 Position{};
-		glm::vec3 Rotation{};
-		glm::vec3 TargetPos{};
+		glm::vec3 Position{ 0, 0, 0 };
+		glm::vec3 Rotation{ 0, 0, 0 };
+		glm::vec3 TargetPos{ 0, 0, 0 };
 		float Zoom = 1;
 		FrustumPlanes Planes{};
 

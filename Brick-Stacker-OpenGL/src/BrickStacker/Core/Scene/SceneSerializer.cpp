@@ -72,14 +72,13 @@ namespace BrickStacker
 					else if (separated.size() == 4)
 					{
 						//Baseplate Color + Alpha
-						glm::vec4 color{ 0 };
+						glm::vec3 color{ 0 };
 
 						std::sscanf(separated[2].c_str(), "%f", &color.r);
 						std::sscanf(separated[1].c_str(), "%f", &color.g);
 						std::sscanf(separated[0].c_str(), "%f", &color.b);
-						std::sscanf(separated[3].c_str(), "%f", &color.a);
 
-						Baseplate.GetComponent<ColorComponent>() = color;
+						Baseplate.GetComponent<BaseplateComponent>().Color = color;
 					}
 					else if (separated.size() == 1)
 					{
@@ -157,10 +156,9 @@ namespace BrickStacker
 
 					position += scale * .5f;
 
-					auto Brick = ActiveScene->CreateEntity("Brick");
-					Brick.AddComponent<BrickComponent>();
-					Brick.AddComponent<ColorComponent>(color);
-					Brick.AddComponent<TransformComponent>(position, 0, scale);
+					auto Brick = ActiveScene->CreateBrick("Brick");
+					Brick.GetComponent<ColorComponent>() = color;
+					Brick.AddOrReplaceComponent<TransformComponent>(position, 0, scale);
 
 					currentBrick = Brick;
 				}
@@ -178,12 +176,11 @@ namespace BrickStacker
 			const LightingComponent& lc = Entity(ActiveScene->GetAllEntitiesWith<LightingComponent>().back(), ActiveScene.get()).GetComponent<LightingComponent>();
 			auto b = Entity(ActiveScene->GetAllEntitiesWith<BaseplateComponent>().back(), ActiveScene.get());
 			const auto& bc = b.GetComponent<BaseplateComponent>();
-			const auto& cc = b.GetComponent<ColorComponent>();
 
 			outFile << "B R I C K  W O R K S H O P  V0.2.0.0" << std::endl;
 			outFile << "Created_With_Brick-Stacker" << std::endl;
 			outFile << lc.AmbientColor.b << " " << lc.AmbientColor.g << " " << lc.AmbientColor.r << std::endl;
-			outFile << cc.Color.b << " " << cc.Color.g << " " << cc.Color.r << " " << cc.Color.a << std::endl;
+			outFile << bc.Color.b << " " << bc.Color.g << " " << bc.Color.r << " 1" << std::endl;
 			outFile << lc.SkyColor.r << " " << lc.SkyColor.g << " " << lc.SkyColor.b << std::endl;
 			outFile << bc.Size << std::endl;
 			outFile << bc.Size << std::endl;
@@ -231,7 +228,6 @@ namespace BrickStacker
 
 			auto Baseplate = defaultScene->CreateEntity("Baseplate");
 			Baseplate.AddComponent<BaseplateComponent>();
-			Baseplate.AddComponent<ColorComponent>(glm::vec4(0.20f, 0.51f, 0.14f, 1));
 
 			auto Lighting = defaultScene->CreateEntity("Lighting");
 			Lighting.AddComponent<LightingComponent>();

@@ -108,7 +108,9 @@ namespace BrickStacker
 	struct BaseplateComponent
 	{
 		uint32_t Size = 100;
-
+		glm::vec3 Color = { 0.20f, 0.51f, 0.14f };
+		bool Visible = true;
+		
 		BaseplateComponent() = default;
 		BaseplateComponent(const BaseplateComponent&) = default;
 		BaseplateComponent(const uint32_t size)

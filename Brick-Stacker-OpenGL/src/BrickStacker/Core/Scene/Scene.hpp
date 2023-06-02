@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.hpp"
-
+#include "BrickStacker/Core/Renderer/Renderer.hpp"
+#include "BrickStacker/Base/AssetManager.hpp"
 #include "Components.hpp"
 
 #include "EnTT/entt.hpp"
@@ -18,6 +19,8 @@ namespace BrickStacker
 		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateBrick(const std::string& name = std::string());
+		Entity CreateCamera(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
 		Entity DuplicateEntity(Entity entity);
