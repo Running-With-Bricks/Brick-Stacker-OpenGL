@@ -133,11 +133,25 @@ namespace BrickStacker
 	{
 		m_Renderer.SetCamera(GetPrimaryCameraComponent().GetProjectionMatrix() * GetPrimaryCameraComponent().GetViewMatrix());
 
+		if (BaseplateComponent& baseplateComponent = Entity(GetAllEntitiesWith<BaseplateComponent>().back(), this).GetComponent<BaseplateComponent>(); baseplateComponent.Visible)
+		{
+			std::vector<float> instancedData;
+
+			for (size_t x = 0; x < 3; x++)
+			{
+				instancedData.push_back(baseplateComponent.Color[x]);
+			}
+			instancedData.push_back((float)baseplateComponent.Size);
+
+			m_AssetManager.GetBaseplateModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
+			m_Renderer.Submit(m_AssetManager.GetBaseplateModel(), m_AssetManager.GetBaseplateShader(), 1);
+		}
+
 		auto bricks = GetAllEntitiesWith<BrickComponent>();
 
 		{
 			std::vector<float> instancedData;
-			std::map<entt::entity, float> transparentBricks;
+			std::set<std::pair<float, entt::entity>, std::greater<>> transparentBricks;
 			int count = 0;
 
 			for (auto BrickEntityID : bricks)
@@ -151,29 +165,17 @@ namespace BrickStacker
 				if (BrickEntity.GetComponent<ColorComponent>().Color.a == 1)
 					PushBackInstancedData(instancedData, BrickEntity);
 				else
-					transparentBricks[BrickEntityID] = glm::length(GetPrimaryCameraComponent().Position - BrickEntity.GetComponent<TransformComponent>().Position);
+					transparentBricks.insert({ glm::length(GetPrimaryCameraComponent().Position - BrickEntity.GetComponent<TransformComponent>().Position), BrickEntityID });
 			}
 
 			for (const auto& pair : transparentBricks)
-				PushBackInstancedData(instancedData, { pair.first, this });
+			{
+				PushBackInstancedData(instancedData, { pair.second, this });
+			}
 
 			m_AssetManager.GetBrickModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
 
 			m_Renderer.Submit(m_AssetManager.GetBrickModel(), m_AssetManager.GetBrickShader(), count);
-		}
-
-		if (BaseplateComponent& baseplateComponent = Entity(GetAllEntitiesWith<BaseplateComponent>().back(), this).GetComponent<BaseplateComponent>(); baseplateComponent.Visible)
-		{
-			std::vector<float> instancedData;
-
-			for (size_t x = 0; x < 3; x++)
-			{
-				instancedData.push_back(baseplateComponent.Color[x]);
-			}
-			instancedData.push_back((float)baseplateComponent.Size);
-
-			m_AssetManager.GetBaseplateModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
-			m_Renderer.Submit(m_AssetManager.GetBaseplateModel(), m_AssetManager.GetBaseplateShader(), 1);
 		}
 	}
 }

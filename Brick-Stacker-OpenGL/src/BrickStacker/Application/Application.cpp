@@ -83,6 +83,7 @@ namespace BrickStacker
 					if (auto str = FileDialogs::OpenFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
 					{
 						m_FrameTimer.Reset();
+						m_SelectedEntity = Entity();
 						m_Scene = SceneSerializer::GetDefaultScene();
 						m_Scene->FilePath = str;
 						auto DefCam = m_Scene->GetPrimaryCameraEntity();
@@ -307,6 +308,12 @@ namespace BrickStacker
 								ImGui::Checkbox("Invert Scroll", &m_CameraController.CameraSettings.InvertScroll);
 							ImGui::TreePop();
 						}
+					}
+					if (ImGui::TreeNodeEx("Planes", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+					{
+						ImGui::DragFloat("Near", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Near, 0.1f, 0.01f, m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Far, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);
+						ImGui::DragFloat("Far", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Far, 0.1f, m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Near, 10000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);
+						ImGui::TreePop();
 					}
 
 					ImGui::TreePop();
