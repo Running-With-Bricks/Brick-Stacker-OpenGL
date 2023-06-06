@@ -4,8 +4,9 @@
 
 namespace BrickStacker
 {
-	Scene::Scene()
+	Scene::Scene(const std::string& filePath)
 	{
+		FilePath = filePath;
 	}
 
 	Scene::~Scene()
@@ -29,16 +30,6 @@ namespace BrickStacker
 	static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
 	{
 		CopyComponentIfExists<Component...>(dst, src);
-	}
-
-	Ref<Scene> Scene::Copy(Ref<Scene> other)
-	{
-		Ref<Scene> newScene = CreateRef<Scene>();
-
-		auto& srcSceneRegistry = other->m_Registry;
-		auto& dstSceneRegistry = newScene->m_Registry;
-
-		return newScene;
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -116,8 +107,73 @@ namespace BrickStacker
 		return {};
 	}
 
+	void Scene::PushBackInstancedData(std::vector<float>& instancedData, Entity brick)
+	{
+		auto& transform = brick.GetComponent<TransformComponent>();
+		auto& color = brick.GetComponent<ColorComponent>().Color;
+
+		glm::mat4 brickMatrix = transform.GetTransform();
+
+		for (size_t x = 0; x < 4; x++)
+		{
+			instancedData.push_back(color[x]);
+		}
+		instancedData.push_back(transform.Scale.x);
+		instancedData.push_back(transform.Scale.z);
+		for (size_t x = 0; x < 4; x++)
+		{
+			for (size_t y = 0; y < 3; y++)
+			{
+				instancedData.push_back(brickMatrix[x][y]);
+			}
+		}
+	}
+
 	void Scene::RenderScene()
 	{
+		m_Renderer.SetCamera(GetPrimaryCameraComponent().GetProjectionMatrix() * GetPrimaryCameraComponent().GetViewMatrix());
 
+		auto bricks = GetAllEntitiesWith<BrickComponent>();
+
+		{
+			std::vector<float> instancedData;
+			std::map<entt::entity, float> transparentBricks;
+			int count = 0;
+
+			for (auto BrickEntityID : bricks)
+			{
+				Entity BrickEntity{ BrickEntityID, this };
+				if (!BrickEntity.GetComponent<ColorComponent>().Visible)
+					continue;
+
+				count++;
+				//pushback brick data into instancedData
+				if (BrickEntity.GetComponent<ColorComponent>().Color.a == 1)
+					PushBackInstancedData(instancedData, BrickEntity);
+				else
+					transparentBricks[BrickEntityID] = glm::length(GetPrimaryCameraComponent().Position - BrickEntity.GetComponent<TransformComponent>().Position);
+			}
+
+			for (const auto& pair : transparentBricks)
+				PushBackInstancedData(instancedData, { pair.first, this });
+
+			m_AssetManager.GetBrickModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
+
+			m_Renderer.Submit(m_AssetManager.GetBrickModel(), m_AssetManager.GetBrickShader(), count);
+		}
+
+		if (BaseplateComponent& baseplateComponent = Entity(GetAllEntitiesWith<BaseplateComponent>().back(), this).GetComponent<BaseplateComponent>(); baseplateComponent.Visible)
+		{
+			std::vector<float> instancedData;
+
+			for (size_t x = 0; x < 3; x++)
+			{
+				instancedData.push_back(baseplateComponent.Color[x]);
+			}
+			instancedData.push_back((float)baseplateComponent.Size);
+
+			m_AssetManager.GetBaseplateModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
+			m_Renderer.Submit(m_AssetManager.GetBaseplateModel(), m_AssetManager.GetBaseplateShader(), 1);
+		}
 	}
 }

@@ -13,10 +13,8 @@ namespace BrickStacker
 	class Scene
 	{
 	public:
-		Scene();
+		Scene(const std::string& filePath = "");
 		~Scene();
-
-		static Ref<Scene> Copy(Ref<Scene> other);
 
 		Entity CreateEntity(const std::string& name = std::string());
 		Entity CreateBrick(const std::string& name = std::string());
@@ -40,9 +38,15 @@ namespace BrickStacker
 			return m_Registry.view<Component>();
 		}
 
+		std::string FilePath = "";
+
 	private:
+		void PushBackInstancedData(std::vector<float>& instancedData, Entity brick);
+
 		entt::registry m_Registry;
 		entt::entity m_PrimaryCamera;
+		Renderer& m_Renderer = Renderer::Get();
+		AssetManager& m_AssetManager = AssetManager::Get();
 
 		friend class Entity;
 	};

@@ -5,108 +5,7 @@ namespace BrickStacker
 {
 	Application::Application()
 	{
-		m_MainShader = Shader::Create("shaders/brick.vert", "shaders/brick.frag");
-
-		m_MainShader->Bind();
-		m_MainShader->SetUniformTexture("TopTexture", 0);
-		m_MainShader->SetUniformTexture("BottomTexture", 1);
-		m_MainShader->Unbind();
-
-		//Cube Verts
-		std::vector<float> CubeVerticies =
-		{
-		//Top
-			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1,
-			 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1,
-			 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1,
-			-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 1,
-		//Bottom
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 2,
-			 0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 2,
-			 0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 2,
-			-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 2,
-		//Left
-			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0,
-			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 0,
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0,
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0,
-		//Right
-			 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0,
-			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 0,
-			 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0,
-			 0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0,
-		//Front
-			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 0,
-			-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 0,
-			-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0,
-			 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0,
-		//Back
-			 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0,
-			-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 0,
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0,
-			 0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 0,
-		};
-
-		//Cube Indicies
-		std::vector<uint32_t> CubeIndicies =
-		{
-			0, 2, 1,
-			2, 0, 3,
-
-			5, 6, 4,
-			7, 4, 6,
-
-			8, 10, 9,
-			10, 8, 11,
-
-			13, 14, 12,
-			15, 12, 14,
-
-			17, 18, 16,
-			19, 16, 18,
-
-			20, 22, 21,
-			22, 20, 23,
-		};
-
-		//Specifying Vertex properties
-		//Vec3 of floats for the position and Vec4 of floats for Color
-		BufferLayout CubeLayout =
-		{
-			{ ShaderDataType::Vec3, "Position" },
-			{ ShaderDataType::Vec2, "TexCoord" },
-			{ ShaderDataType::Float, "TexIndex" },
-		};
-
-		BufferLayout InstancedLayout =
-		{
-			{ ShaderDataType::Vec4, "Color", true },
-			{ ShaderDataType::Vec2, "TilingFactor", true},
-			{ ShaderDataType::Vec3, "Transform1", true },
-			{ ShaderDataType::Vec3, "Transform2", true },
-			{ ShaderDataType::Vec3, "Transform3", true },
-			{ ShaderDataType::Vec3, "Transform4", true },
-		};
-
-		//Creating objects which will hold cube data
-
-		Ref<VertexBuffer> cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
-		Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create({}, GL_STREAM_DRAW);
-		Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
-
-		m_CubeVertexArray = VertexArray::Create();
-
-		//Setting the layout
-		cubeVertexBuffer->SetLayout(CubeLayout);
-		cubeInstancedVertexBuffer->SetLayout(InstancedLayout);
-
-		//Binding VertexBuffer and IndexBuffer to VertexArray
-		m_CubeVertexArray->AddVertexBuffer(cubeVertexBuffer);
-		m_CubeVertexArray->AddVertexBuffer(cubeInstancedVertexBuffer);
-		m_CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
-
 		m_Scene = SceneSerializer::GetDefaultScene();
-		m_Camera = m_Scene->FindEntityByName("Camera");
 		RenderCommand::SetClearColor(m_Scene->FindEntityByName("Lighting").GetComponent<LightingComponent>().SkyColor, 1);
 
 		FramebufferSpecifications fbSpecs;
@@ -115,12 +14,7 @@ namespace BrickStacker
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
 		m_TopBrickTexture = Texture2D::Create("./assets/images/stud_top.png");
-		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");		 
-	}
-
-	Application::~Application()
-	{
-	
+		m_BottomBrickTexture = Texture2D::Create("./assets/images/stud_bottom.png");
 	}
 
 	void Application::Run()
@@ -136,84 +30,29 @@ namespace BrickStacker
 		Keyboard::Setup();
 		Mouse::Setup();
 
-		m_Renderer.SetCamera(m_Scene->GetPrimaryCameraComponent().GetViewMatrix() * m_Scene->GetPrimaryCameraComponent().GetProjectionMatrix());
-
 		while (!m_Window.ShouldClose())
 		{
-			m_Timer.Reset();
+			m_FrameTimer.Reset();
 
 			m_Window.Update();
 			m_Discord.Update();
+			m_CameraController.Update(m_LastFrame);
 
-			m_Profiler.AddFrame(m_LastFrame);
-
+			m_DrawTimer.Reset();
 			Draw();
+			m_DrawTimer.Stop();
 
-			m_Timer.Stop();
-			m_LastFrame = m_Timer.Elapsed();
+			m_FrameTimer.Stop();
+			m_LastFrame = m_FrameTimer.Elapsed();
+			m_GlobalProfiler.AddFrame(m_LastFrame);
+			m_DrawProfiler.AddFrame(m_DrawTimer.Elapsed());
 		}
 
 		ImGui::SaveIniSettingsToDisk("imgui.ini");
 	}
 
-	 void Application::updateBricksInstancedData()
-	{
-		std::vector<float> instancedData;
-
-		//std::sort(m_SortedBricks.begin(), m_SortedBricks.end(), [m_Scene = m_Scene](const Ref<Brick>& a, const Ref<Brick>& b)
-		//	{
-		//		if ((a->Color.a == 1.0f) && (b->Color.a != 1.0f)) {
-		//			// If a has alpha 1 and b doesn't, a comes first
-		//			return true;
-		//		}
-		//		else if (a->Color.a != 1.0f && b->Color.a == 1.0f) {
-		//			// If b has alpha 1 and a doesn't, b comes first
-		//			return false;
-		//		}
-		//		else {
-		//
-		//			// If both have alpha 1 or both don't have alpha 1, compare by position length
-		//			return glm::length(m_Scene->GetPrimaryCameraComponent().Position - a->Position)
-		//				 > glm::length(m_Scene->GetPrimaryCameraComponent().Position - b->Position);
-		//		}
-		//	}
-		//);
-
-		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent>();
-	
-		for (auto BrickEntityID : bricks)
-		{
-			Entity BrickEntity{ BrickEntityID, m_Scene.get() };
-			if (!BrickEntity.GetComponent<ColorComponent>().Visible)
-				continue;
-
-			//pushback brick data into instancedData
-			{
-				glm::mat4 brickMatrix = BrickEntity.GetComponent<TransformComponent>().GetTransform();
-
-				for (size_t x = 0; x < 4; x++)
-				{
-					instancedData.push_back(BrickEntity.GetComponent<ColorComponent>().Color[x]);
-				}
-				instancedData.push_back(BrickEntity.GetComponent<TransformComponent>().Scale.x);
-				instancedData.push_back(BrickEntity.GetComponent<TransformComponent>().Scale.z);
-				for (size_t x = 0; x < 4; x++)
-				{
-					for (size_t y = 0; y < 3; y++)
-					{
-						instancedData.push_back(brickMatrix[x][y]);
-					}
-				}
-			}
-		}
-		m_CubeVertexArray->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
-	}
-
 	void Application::Draw()
 	{
-		auto view = m_Scene->GetAllEntitiesWith<NameComponent>();
-		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent>();
-
 		static bool updateFontSize = false;
 		static int fontSize = 14;
 
@@ -235,26 +74,46 @@ namespace BrickStacker
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N")) {}
-				if (ImGui::MenuItem("Open", "Ctrl+O"))
+				if (ImGui::MenuItem("New", "Ctrl+N") && FileDialogs::ChangeFile(m_Scene))
+				{
+					m_Scene = SceneSerializer::GetDefaultScene();
+				}
+				if (ImGui::MenuItem("Open", "Ctrl+O") && FileDialogs::ChangeFile(m_Scene))
 				{
 					if (auto str = FileDialogs::OpenFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
 					{
-						m_Timer.Reset();
-						for (auto& entity : m_Scene->GetAllEntitiesWith<BrickComponent>())
-							Entity(entity, m_Scene.get()).Destroy();
-						m_SelectedEntity = {entt::null, nullptr};
+						m_FrameTimer.Reset();
+						m_Scene = SceneSerializer::GetDefaultScene();
+						m_Scene->FilePath = str;
+						auto DefCam = m_Scene->GetPrimaryCameraEntity();
 
-						SceneSerializer::Deserialize(str, m_Scene);
-						m_Timer.Stop();
-						m_LoadTime = m_Timer.Elapsed();
+						SceneSerializer::Deserialize({ str, m_Scene });
+						if (DefCam != m_Scene->GetPrimaryCameraEntity())
+						{
+							DefCam.Destroy();
+						}
+						m_FrameTimer.Stop();
+						m_LoadTime = m_FrameTimer.Elapsed();						
 					};
 				}
 				if (ImGui::MenuItem("Save", "Ctrl+S"))
 				{
-					if (auto str = FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
-						SceneSerializer::Serialize(str, m_Scene);
+					if (auto str = !m_Scene->FilePath.empty() ? m_Scene->FilePath : FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
+					{
+						SceneSerializer::Serialize({ m_Scene->FilePath, m_Scene });
+						m_Scene->FilePath = str;
+					}
 				}
+				if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+				{
+					if (auto str = FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
+					{
+						SceneSerializer::Serialize({ str, m_Scene });
+						m_Scene->FilePath = str;
+					}
+				}
+				bool a = false;
+				ImGui::Checkbox("Include Brick-Stacker Specifics", &a);
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Edit"))
@@ -268,18 +127,24 @@ namespace BrickStacker
 				if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
 				if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
 				if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
-				if (ImGui::MenuItem("Delete", "Del")) {}
+				if (ImGui::MenuItem("Delete", "Del", false, (m_SelectedEntity && m_SelectedEntity != m_Scene->GetPrimaryCameraEntity() && !m_SelectedEntity.HasComponent<LightingComponent>() && !m_SelectedEntity.HasComponent<BaseplateComponent>()))) {
+					m_SelectedEntity.Destroy();
+					m_SelectedEntity = Entity();
+				}
 
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
 		}
 
+		auto view = m_Scene->GetAllEntitiesWith<NameComponent>();
+		auto bricks = m_Scene->GetAllEntitiesWith<BrickComponent>();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Viewport");
 		m_FocusedViewport = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != *((glm::vec2*)&viewportSize) && viewportSize.x != 0 && viewportSize.y != 0)
+		if (m_ViewportSize != viewportSize && viewportSize.x != 0 && viewportSize.y != 0)
 		{
 			m_ViewportSize = { viewportSize.x, viewportSize.y };
 			glViewport(0, 0, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -317,10 +182,19 @@ namespace BrickStacker
 		ImGui::End();
 		
 		ImGui::Begin("Debug");
-		ImGui::Text("Actual ms: %.3fms", m_Profiler.GetFPSBuffer().Current());
-		ImGui::Text("Average ms: %.3fms", m_Profiler.GetFPSBuffer().Average());
-		ImGui::Text("Lowest ms: %.3fms", m_Profiler.LowestMs());
-		ImGui::Text("Frame Count: %d", m_Profiler.FrameCount());
+		ImGui::Text("Frame Count: %d", m_GlobalProfiler.FrameCount());
+		if (ImGui::TreeNodeEx("Frame time", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Text("Actual ms: %.3fms", m_GlobalProfiler.GetFPSBuffer().Current());
+			ImGui::Text("Average ms: %.3fms", m_GlobalProfiler.GetFPSBuffer().Average());
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNodeEx("Draw time", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Text("Actual ms: %.3fms", m_DrawProfiler.GetFPSBuffer().Current());
+			ImGui::Text("Average ms: %.3fms", m_DrawProfiler.GetFPSBuffer().Average());
+			ImGui::TreePop();
+		}
 		ImGui::Separator();
 		ImGui::Text("Map load time: %.3fs", m_LoadTime);
 		ImGui::Text("Bricks: %d", bricks.size());
@@ -365,14 +239,14 @@ namespace BrickStacker
 				}
 				ImGui::Separator();
 
-				/// Disabled cuz no other shapes other than Cube so yeah
+			/// Disabled cuz no other shapes other than Cube so yeah
 			//if (m_SelectedEntity.HasComponent<BrickComponent>())
-				//{
+			//{
 			//	if (ImGui::TreeNodeEx("Brick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 			//	{
-				//	
+			//	
 			//	}
-				//}
+			//}
 			if (m_SelectedEntity.HasComponent<BaseplateComponent>())
 			{
 				if (ImGui::TreeNodeEx("Baseplate", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
@@ -403,7 +277,7 @@ namespace BrickStacker
 					if ((CameraType)type == CameraType::Perspective)
 						ImGui::DragFloat("FOV", &m_SelectedEntity.GetComponent<CameraComponent>().camera.FOV, .1f, 0.1f, 179, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 					else if ((CameraType)type == CameraType::Orthographic)
-						ImGui::DragFloat("Zoom", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Zoom, .1f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+						ImGui::DragFloat("Zoom", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Zoom, .1f, 0.f, 1000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);
 
 					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
 					{
@@ -512,17 +386,11 @@ namespace BrickStacker
 		m_ImGui.EndFrame();
 
 
-
-		updateBricksInstancedData();
-
 		if (m_ViewportSize.x != 0 && m_ViewportSize.y != 0)
 		{
 			m_Scene->GetPrimaryCameraComponent().Aspect = m_ViewportSize.x / m_ViewportSize.y;
 			m_Scene->GetPrimaryCameraComponent().Planes = { -m_Scene->GetPrimaryCameraComponent().Aspect, m_Scene->GetPrimaryCameraComponent().Aspect, -1, 1, m_Scene->GetPrimaryCameraComponent().Planes.Near, m_Scene->GetPrimaryCameraComponent().Planes.Far };
 		}
-
-		m_CameraController.Update(m_LastFrame);
-		m_Renderer.SetCamera(m_Scene->GetPrimaryCameraComponent().GetProjectionMatrix() * m_Scene->GetPrimaryCameraComponent().GetViewMatrix());
 
 		m_Framebuffer->Bind();
 		RenderCommand::Clear();
@@ -530,10 +398,7 @@ namespace BrickStacker
 		m_TopBrickTexture->Bind(0);
 		m_BottomBrickTexture->Bind(1);
 
-		if (auto size = bricks.size(); size)
-		{
-			m_Renderer.Submit(m_CubeVertexArray, m_MainShader, size);
-		}
+		m_Scene->RenderScene();
 
 		m_Framebuffer->Unbind();
 	}

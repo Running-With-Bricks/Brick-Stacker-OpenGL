@@ -107,10 +107,10 @@ namespace BrickStacker
 			std::vector<float> CubeVerticies =
 			{
 				//Top
-				-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1,
-				 0.5f,  0.5f,  0.5f, 1.0f, 0.0f, 1,
-				 0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1,
-				-0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 1,
+				-0.5f,  0.0f,  0.5f, 0.0f, 0.0f, 1,
+				 0.5f,  0.0f,  0.5f, 1.0f, 0.0f, 1,
+				 0.5f,  0.0f, -0.5f, 1.0f, 1.0f, 1,
+				-0.5f,  0.0f, -0.5f, 0.0f, 1.0f, 1,
 			};
 
 			//Cube Indicies
@@ -131,7 +131,7 @@ namespace BrickStacker
 
 			BufferLayout InstancedLayout =
 			{
-				{ ShaderDataType::Vec4, "Color", true },
+				{ ShaderDataType::Vec3, "Color", true },
 				{ ShaderDataType::Float, "Scale", true}
 			};
 

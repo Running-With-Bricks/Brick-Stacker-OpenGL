@@ -21,6 +21,7 @@
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
 #include "BrickStacker/Utils/Profiler.hpp"
 #include "BrickStacker/Utils/PlatformUtils.hpp"
+#include "BrickStacker/Base/AssetManager.hpp"
 
 namespace BrickStacker
 {
@@ -47,36 +48,29 @@ namespace BrickStacker
 
 	private:
 		Application();
-		~Application();
-
-		void updateBricksInstancedData();
+		~Application() = default;
 
 		Window m_Window{ 1080, 608, "Brick Stacker" };
-
-		Ref<Shader> m_MainShader;
-		Ref<Shader> m_TestShader;
 
 		Ref<Texture2D> m_TopBrickTexture;
 		Ref<Texture2D> m_BottomBrickTexture;
 
-		Ref<VertexArray> m_CubeVertexArray;
-
 		Ref<Scene> m_Scene;
-		Entity m_Camera;
 		CameraController& m_CameraController = CameraController::Get();
 
 		Ref<Framebuffer> m_Framebuffer;
-		glm::vec2 m_ViewportSize{ 1920, 1080 };
+		ImVec2 m_ViewportSize{ 1920, 1080 };
 
 		float m_LoadTime;
 		bool m_FocusedViewport = false;
 
-		Timer m_Timer{};
+		Timer m_FrameTimer{};
+		Timer m_DrawTimer{};
 		float m_LastFrame{ 1 };
 		ImGuiLayer m_ImGui{m_Window};
 		Discord& m_Discord = Discord::Get();
-		Renderer& m_Renderer = Renderer::Get();
-		Profiler& m_Profiler = Profiler::Get();
+		Profiler& m_GlobalProfiler = Profiler::Get();
+		Profiler& m_DrawProfiler = Profiler();
 
 		Entity m_SelectedEntity;
 	};
