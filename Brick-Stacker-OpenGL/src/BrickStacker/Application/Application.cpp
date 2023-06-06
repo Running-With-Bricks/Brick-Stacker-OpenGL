@@ -185,12 +185,14 @@ namespace BrickStacker
 		ImGui::Text("Frame Count: %d", m_GlobalProfiler.FrameCount());
 		if (ImGui::TreeNodeEx("Frame time", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			ImGui::Text("Average FPS: %.3f", 1 / (m_GlobalProfiler.GetFPSBuffer().Average() * 0.001f));
 			ImGui::Text("Actual ms: %.3fms", m_GlobalProfiler.GetFPSBuffer().Current());
 			ImGui::Text("Average ms: %.3fms", m_GlobalProfiler.GetFPSBuffer().Average());
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNodeEx("Draw time", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			ImGui::Text("Average FPS: %.3f", 1 / (m_DrawProfiler.GetFPSBuffer().Average() * 0.001f));
 			ImGui::Text("Actual ms: %.3fms", m_DrawProfiler.GetFPSBuffer().Current());
 			ImGui::Text("Average ms: %.3fms", m_DrawProfiler.GetFPSBuffer().Average());
 			ImGui::TreePop();
