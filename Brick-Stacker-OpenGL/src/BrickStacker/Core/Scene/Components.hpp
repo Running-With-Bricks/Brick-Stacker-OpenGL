@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.hpp"
 
+#include "EnTT/entt.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -17,6 +18,14 @@ namespace BrickStacker
 		NameComponent(const NameComponent&) = default;
 		NameComponent(const std::string& Name)
 			: Name(Name) {}
+	};
+
+	struct ParentComponent {
+		entt::entity parent;
+	};
+
+	struct ChildComponent {
+		std::vector<entt::entity> children;
 	};
 
 	struct TransformComponent

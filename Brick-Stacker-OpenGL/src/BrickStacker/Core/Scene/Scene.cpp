@@ -7,6 +7,10 @@ namespace BrickStacker
 	Scene::Scene(const std::string& filePath)
 	{
 		FilePath = filePath;
+		Entity root = { m_Registry.create(), this };
+		root.AddComponent<NameComponent>("ROOT_ENTITY");
+		m_RootEntity = root;
+		root.AddComponent<ChildComponent>();
 	}
 
 	Scene::~Scene()
@@ -36,6 +40,8 @@ namespace BrickStacker
 	{
 		Entity entity = { m_Registry.create(), this };
 		entity.AddComponent<NameComponent>(name);
+		entity.AddComponent<ParentComponent>().parent = m_RootEntity;
+		GetRoot().push_back(entity);
 
 		return entity;
 	}
@@ -60,6 +66,8 @@ namespace BrickStacker
 
 	void Scene::DestroyEntity(Entity entity)
 	{
+		auto& children = GetRoot();
+		children.erase(std::remove(children.begin(), children.end(), entity), children.end());
 		m_Registry.destroy(entity);
 	}
 
@@ -177,5 +185,10 @@ namespace BrickStacker
 
 			m_Renderer.Submit(m_AssetManager.GetBrickModel(), m_AssetManager.GetBrickShader(), count);
 		}
+	}
+
+	std::vector<entt::entity>& Scene::GetRoot()
+	{
+		return Entity(m_RootEntity, this).GetComponent<ChildComponent>().children;
 	}
 }

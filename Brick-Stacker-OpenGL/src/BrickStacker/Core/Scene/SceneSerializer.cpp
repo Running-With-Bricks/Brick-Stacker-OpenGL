@@ -223,7 +223,7 @@ namespace BrickStacker
 			const auto& bc = b.GetComponent<BaseplateComponent>();
 
 			outFile << "B R I C K  W O R K S H O P  V0.2.0.0" << std::endl;
-			outFile << "Created_With_Brick-Stacker" << std::endl;
+			outFile << "Created_With Brick-Stacker" << std::endl;
 			outFile << lc.AmbientColor.b << " " << lc.AmbientColor.g << " " << lc.AmbientColor.r << std::endl;
 			outFile << bc.Color.b << " " << bc.Color.g << " " << bc.Color.r << " 1" << std::endl;
 			outFile << lc.SkyColor.r << " " << lc.SkyColor.g << " " << lc.SkyColor.b << std::endl;
@@ -233,10 +233,10 @@ namespace BrickStacker
 				outFile << "$BP-INVISIBLE";
 			outFile << std::endl << std::endl;
 
-			auto& entities = settings.ActiveScene->GetAllEntitiesWith<NameComponent>();
-			for (auto& entityIT = entities.rbegin(); entityIT != entities.rend(); entityIT++)
+			auto& entities = settings.ActiveScene->GetRoot();
+			for (auto& entityID : entities)
 			{
-				auto entity = Entity(*entityIT, settings.ActiveScene.get());
+				auto entity = Entity(entityID, settings.ActiveScene.get());
 				if (entity.HasComponent<BrickComponent>())
 				{
 					const auto& tc = entity.GetComponent<TransformComponent>();

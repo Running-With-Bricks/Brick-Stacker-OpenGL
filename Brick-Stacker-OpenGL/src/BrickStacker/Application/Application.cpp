@@ -161,10 +161,10 @@ namespace BrickStacker
 
 		ImGui::Begin("Explorer");
 		
-		for (auto& currentEntityIT = view.rbegin(); currentEntityIT != view.rend(); currentEntityIT++)
+		for (auto& entityID : m_Scene->GetRoot())
 		{
-			Entity currentEntity{ *currentEntityIT, m_Scene.get() };
-			ImGui::PushID((int)*currentEntityIT);
+			Entity currentEntity{ entityID, m_Scene.get() };
+			ImGui::PushID((int)entityID);
 		
 			auto treeOpened = ImGui::TreeNodeEx("", (m_SelectedEntity == currentEntity ? ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_Leaf);
 			auto isClicked = ImGui::IsItemClicked();

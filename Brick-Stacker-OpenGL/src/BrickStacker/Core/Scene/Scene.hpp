@@ -38,6 +38,8 @@ namespace BrickStacker
 			return m_Registry.view<Component>();
 		}
 
+		std::vector<entt::entity>& GetRoot();
+
 		std::string FilePath = "";
 
 	private:
@@ -45,6 +47,7 @@ namespace BrickStacker
 
 		entt::registry m_Registry;
 		entt::entity m_PrimaryCamera;
+		entt::entity m_RootEntity;
 		Renderer& m_Renderer = Renderer::Get();
 		AssetManager& m_AssetManager = AssetManager::Get();
 
