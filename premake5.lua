@@ -44,13 +44,15 @@ project "Brick-Stacker-OpenGL"
 		"%{wks.location}/vendor/ImGui/include",
 		"%{wks.location}/dependancies/glm/include",
 		"%{wks.location}/vendor/EnTT/include",
+		"%{wks.location}/vendor/JoltPhysics"
 	}
 
 	links
 	{
 		"glad",
 		"DiscordGameSDK",
-		"ImGui"
+		"ImGui",
+		"JoltPhysics"
 	}
 
 	libdirs

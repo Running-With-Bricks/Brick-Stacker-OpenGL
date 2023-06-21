@@ -9,6 +9,7 @@
 namespace BrickStacker
 {
 	class Entity;
+	class SceneSerializer;
 
 	class Scene
 	{
@@ -32,6 +33,9 @@ namespace BrickStacker
 		void OnUpdate(float deltaTime);
 		void RenderScene();
 
+		std::pair<glm::vec3, entt::entity> Raycast(glm::vec3 pos, glm::vec3 dir) { m_PhysicsWorld->Raycast(pos, dir); };
+		std::pair<glm::vec3, entt::entity> Raycast(const Camera& camera, glm::vec2 mouseCoords);
+
 		template<typename Component>
 		auto GetAllEntitiesWith()
 		{
@@ -48,9 +52,11 @@ namespace BrickStacker
 		entt::registry m_Registry;
 		entt::entity m_PrimaryCamera;
 		entt::entity m_RootEntity;
+		Ref<PhysicsWorld> m_PhysicsWorld;
 		Renderer& m_Renderer = Renderer::Get();
 		AssetManager& m_AssetManager = AssetManager::Get();
 
 		friend class Entity;
+		friend class SceneSerializer;
 	};
 }

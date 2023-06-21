@@ -11,6 +11,8 @@ namespace BrickStacker
 		root.AddComponent<NameComponent>("ROOT_ENTITY");
 		m_RootEntity = root;
 		root.AddComponent<ChildComponent>();
+
+		m_PhysicsWorld = PhysicsWorld::Create();
 	}
 
 	Scene::~Scene()
@@ -52,6 +54,7 @@ namespace BrickStacker
 		Brick.AddComponent<BrickComponent>();
 		Brick.AddComponent<ColorComponent>(glm::vec4(0.5f, 0.5f, 0.5f, 1));
 		Brick.AddComponent<TransformComponent>();
+		Brick.AddComponent<PhysicsComponent>(m_PhysicsWorld->AddBrick(Brick), m_PhysicsWorld);
 
 		return Brick;
 	}
@@ -75,6 +78,31 @@ namespace BrickStacker
 	{
 		// Render
 		RenderScene();
+	}
+
+	std::pair<glm::vec3, entt::entity> Scene::Raycast(const Camera& camera, glm::vec2 mouseCoords)
+	{
+		glm::vec4 lRayStart_NDC(
+			mouseCoords.x,
+			-mouseCoords.y,
+			-1.0f,
+			1.0f
+		);
+		glm::vec4 lRayEnd_NDC(
+			mouseCoords.x,
+			-mouseCoords.y,
+			0.0f,
+			1.0f
+		);
+
+		glm::mat4 M = glm::inverse(camera.GetProjectionMatrix() * camera.GetViewMatrix());
+		glm::vec4 lRayStart_world = M * lRayStart_NDC; lRayStart_world /= lRayStart_world.w;
+		glm::vec4 lRayEnd_world   = M * lRayEnd_NDC  ; lRayEnd_world   /= lRayEnd_world.w;
+
+		glm::vec3 lRayDir_world(lRayEnd_world - lRayStart_world);
+		lRayDir_world = glm::normalize(lRayDir_world) * camera.Planes.Far;
+
+		return m_PhysicsWorld->Raycast(lRayStart_world, lRayDir_world);
 	}
 
 	void Scene::SetPrimaryCameraEntity(Entity entity)

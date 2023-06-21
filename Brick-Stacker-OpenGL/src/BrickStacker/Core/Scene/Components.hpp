@@ -6,9 +6,11 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "Camera.hpp"
+#include "BrickStacker/Core/Physics/PhysicsWorld.hpp"
 
 namespace BrickStacker
 {
+	class Entity;
 
 	struct NameComponent
 	{
@@ -107,7 +109,6 @@ namespace BrickStacker
 		Shape Model = Shape::Cube;
 		uint32_t ModelID = 0;
 
-
 		BrickComponent() = default;
 		BrickComponent(const BrickComponent&) = default;
 		BrickComponent(const Shape& model)
@@ -124,6 +125,28 @@ namespace BrickStacker
 		BaseplateComponent(const BaseplateComponent&) = default;
 		BaseplateComponent(const uint32_t size)
 			: Size(size) {}
+	};
+
+	struct PhysicsComponent
+	{
+	public:
+		PhysicsComponent() = delete;
+		PhysicsComponent(const PhysicsComponent&) = default;
+		PhysicsComponent(const JPH::BodyID ID, Ref<PhysicsWorld> PhysWorld)
+			: m_ID(ID), m_PhysicsWorld{ PhysWorld } {}
+		~PhysicsComponent()
+		{
+			m_PhysicsWorld->DeleteBrick(m_ID);
+		}
+
+		void Update()
+		{
+			m_PhysicsWorld->UpdateBrick(m_ID);
+		}
+
+	private:
+		JPH::BodyID m_ID;
+		Ref<PhysicsWorld> m_PhysicsWorld;
 	};
 
 	struct LightingComponent

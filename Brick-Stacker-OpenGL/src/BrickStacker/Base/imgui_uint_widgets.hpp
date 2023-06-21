@@ -1,9 +1,6 @@
 #pragma once
 
-#include "ImGui/imgui.h"
-#include "imgui_stdlib.h"
-#include "ImGui/backends/imgui_impl_glfw.h"
-#include "ImGui/backends/imgui_impl_opengl3.h"
+#include "imgui_includes.hpp"
 
 namespace ImGui
 {

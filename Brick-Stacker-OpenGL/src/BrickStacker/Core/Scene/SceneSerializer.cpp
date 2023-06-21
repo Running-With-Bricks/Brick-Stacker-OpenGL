@@ -213,6 +213,9 @@ namespace BrickStacker
 			BS_ERROR("Couldn't open {0} to load the map", settings.FilePath);
 
 		mapFile.close();
+
+		for (auto ent : settings.ActiveScene->GetAllEntitiesWith<PhysicsComponent>())
+			Entity(ent, settings.ActiveScene.get()).GetComponent<PhysicsComponent>().Update();
 	}
 	void SceneSerializer::Serialize(SceneSerializerSettings settings)
 	{
@@ -293,6 +296,7 @@ namespace BrickStacker
 
 		auto Baseplate = defaultScene->CreateEntity("Baseplate");
 		Baseplate.AddComponent<BaseplateComponent>();
+		Baseplate.AddComponent<PhysicsComponent>(defaultScene->m_PhysicsWorld->AddBrick(Baseplate), defaultScene->m_PhysicsWorld);
 
 		auto Lighting = defaultScene->CreateEntity("Lighting");
 		Lighting.AddComponent<LightingComponent>();

@@ -19,6 +19,7 @@
 
 #include <type_traits>
 #include <random>
+#include <cstdarg>
 
 #include <chrono>
 #include <string>

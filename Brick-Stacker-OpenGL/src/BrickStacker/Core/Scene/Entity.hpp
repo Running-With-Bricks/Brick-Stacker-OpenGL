@@ -68,6 +68,7 @@ namespace BrickStacker
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 
 		const std::string& GetName() { return GetComponent<NameComponent>().Name; }
+		const entt::entity& GetHandle() const { return m_EntityHandle; }
 
 		bool operator==(const Entity& other) const
 		{

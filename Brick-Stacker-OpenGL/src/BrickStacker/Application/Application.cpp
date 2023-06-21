@@ -77,6 +77,7 @@ namespace BrickStacker
 				if (ImGui::MenuItem("New", "Ctrl+N") && FileDialogs::ChangeFile(m_Scene))
 				{
 					m_Scene = SceneSerializer::GetDefaultScene();
+					m_SelectedEntity = Entity();
 				}
 				if (ImGui::MenuItem("Open", "Ctrl+O") && FileDialogs::ChangeFile(m_Scene))
 				{
@@ -122,13 +123,20 @@ namespace BrickStacker
 				if (ImGui::MenuItem("Undo", "Ctrl+Z")) {}
 				if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {}  // Disabled item
 				ImGui::Separator();
-				if (ImGui::MenuItem("Add Brick", "Ctrl+A")) { m_Scene->CreateBrick(); }
-				if (ImGui::MenuItem("Add Camera", NULL)) { m_Scene->CreateCamera(); }
+				if (ImGui::MenuItem("Add Brick", "Ctrl+A"))
+				{
+					auto b = m_Scene->CreateBrick();
+					b.GetComponent<TransformComponent>().Position = m_Scene->Raycast(m_Scene->GetPrimaryCameraComponent(), { 0, 0 }).first;
+					b.GetComponent<PhysicsComponent>().Update();
+				}
+				if (ImGui::MenuItem("Add Camera", NULL))
+					m_Scene->CreateCamera();
 				ImGui::Separator();
 				if (ImGui::MenuItem("Copy", "Ctrl+C")) {}
 				if (ImGui::MenuItem("Paste", "Ctrl+V")) {}
 				if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
-				if (ImGui::MenuItem("Delete", "Del", false, (m_SelectedEntity && m_SelectedEntity != m_Scene->GetPrimaryCameraEntity() && !m_SelectedEntity.HasComponent<LightingComponent>() && !m_SelectedEntity.HasComponent<BaseplateComponent>()))) {
+				if (ImGui::MenuItem("Delete", "Del", false, (m_SelectedEntity && m_SelectedEntity != m_Scene->GetPrimaryCameraEntity() && !m_SelectedEntity.HasComponent<LightingComponent>() && !m_SelectedEntity.HasComponent<BaseplateComponent>())))
+				{
 					m_SelectedEntity.Destroy();
 					m_SelectedEntity = Entity();
 				}
@@ -145,11 +153,21 @@ namespace BrickStacker
 		ImGui::Begin("Viewport");
 		m_FocusedViewport = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
+		auto isMouseClicked = ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
 		if (m_ViewportSize != viewportSize && viewportSize.x != 0 && viewportSize.y != 0)
 		{
 			m_ViewportSize = { viewportSize.x, viewportSize.y };
-			glViewport(0, 0, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
+		if (isMouseClicked)
+		{
+			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+			auto viewportOffset = ImGui::GetWindowPos();
+			auto pos = ImGui::GetMousePos();
+			auto windowPos = ImGui::GetWindowContentRegionMin();
+			glm::vec2 mappedPos = { (((pos.x - (viewportMinRegion.x + viewportOffset.x)) / viewportSize.x) - 0.5f) * 2, (((pos.y - (viewportMinRegion.y + viewportOffset.y)) / viewportSize.y) - 0.5f) * 2 };
+			auto rres = m_Scene->Raycast(m_Scene->GetPrimaryCameraComponent(), mappedPos);
+			m_SelectedEntity = { rres.second, m_Scene.get()};
 		}
 
 		auto textureID = m_Framebuffer->GetColorAttachmentRendererID();
@@ -255,6 +273,7 @@ namespace BrickStacker
 				if (ImGui::TreeNodeEx("Baseplate", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
 					ImGui::DragUint("Size", &m_SelectedEntity.GetComponent<BaseplateComponent>().Size, 0.1f, 0, UINT32_MAX, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::EntityEdited(m_SelectedEntity);
 					ImGui::TreePop();
 				}
 				ImGui::Separator();
@@ -369,9 +388,9 @@ namespace BrickStacker
 			{
 				if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<TransformComponent>().Position.x, .1f);
-					ImGui::DragInt("Rotation", &m_SelectedEntity.GetComponent<TransformComponent>().Rotation, .5f);
-					ImGui::DragFloat3("Scale", &m_SelectedEntity.GetComponent<TransformComponent>().Scale.x, .1f);
+					ImGui::DragFloat3("Position", &m_SelectedEntity.GetComponent<TransformComponent>().Position.x, .1f); ImGui::EntityEdited(m_SelectedEntity);
+					ImGui::DragInt("Rotation", &m_SelectedEntity.GetComponent<TransformComponent>().Rotation, .5f); ImGui::EntityEdited(m_SelectedEntity);
+					ImGui::DragFloat3("Scale", &m_SelectedEntity.GetComponent<TransformComponent>().Scale.x, .1f); ImGui::EntityEdited(m_SelectedEntity);
 
 					ImGui::TreePop();
 				}

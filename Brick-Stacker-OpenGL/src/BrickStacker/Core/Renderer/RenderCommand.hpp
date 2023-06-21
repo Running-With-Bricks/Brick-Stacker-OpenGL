@@ -29,12 +29,20 @@ namespace BrickStacker
 
 		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
 		{
-			glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			IfLines(vertexArray);
+			glDrawElements((GLenum)vertexArray->renderingMode, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 		}
 
 		inline static void DrawIndexedInstanced(const Ref<VertexArray>& vertexArray, int count)
 		{
-			glDrawElementsInstanced(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr, count);
+			IfLines(vertexArray);
+			glDrawElementsInstanced((GLenum)vertexArray->renderingMode, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr, count);
+		}
+	private:
+		inline static void IfLines(const Ref<VertexArray>& vertexArray)
+		{
+			if (vertexArray->renderingMode == RenderingMode::Lines)
+				glLineWidth(vertexArray->lineWidth);
 		}
 	};
 }

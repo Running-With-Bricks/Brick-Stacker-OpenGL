@@ -215,10 +215,17 @@ namespace BrickStacker
 	//Vertex Array//
 	//------------//
 
+	enum class RenderingMode
+	{
+		Points = GL_POINTS,
+		Lines = GL_LINES,
+		Triangles = GL_TRIANGLES
+	};
+
 	class VertexArray
 	{
 	public:
-		static Ref<VertexArray> Create() { return CreateRef<VertexArray>(); };
+		static Ref<VertexArray> Create() { return CreateRef<VertexArray>(); }
 		VertexArray();
 		~VertexArray();
 
@@ -228,8 +235,11 @@ namespace BrickStacker
 		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer);
 		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer);
 
-		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; };
-		const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; };
+		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const { return m_VertexBuffers; }
+		const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+
+		RenderingMode renderingMode = RenderingMode::Triangles;
+		float lineWidth = 1.0f;
 	private:
 		uint32_t m_RendererID;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;

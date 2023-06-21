@@ -7,6 +7,7 @@ namespace BrickStacker
 	{
 		{
 			m_BrickModel = VertexArray::Create();
+			m_WireframeBrickModel = VertexArray::Create();
 
 			//Cube Verts
 			std::vector<float> CubeVerticies =
@@ -65,6 +66,28 @@ namespace BrickStacker
 				22, 20, 23,
 			};
 
+			//Wireframe Cube Indicies
+			std::vector<uint32_t> WireframeCubeIndicies =
+			{
+				0, 1, 0, 3,
+				2, 1, 2, 3,
+
+				4, 5, 4, 7,
+				6, 5, 6, 7,
+
+				8, 9, 8, 11,
+				10, 9, 10, 11,
+
+				12, 13, 12, 15,
+				14, 13, 14, 15,
+
+				16, 17, 16, 19,
+				18, 17, 18, 19,
+
+				20, 21, 20, 23,
+				22, 21, 22, 23,
+			};
+
 			//Specifying Vertex properties
 			//Vec3 of floats for the position and Vec4 of floats for Color
 			BufferLayout CubeLayout =
@@ -89,6 +112,7 @@ namespace BrickStacker
 			Ref<VertexBuffer> cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
 			Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create({}, GL_STREAM_DRAW);
 			Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
+			Ref<IndexBuffer> wireframeCubeIndexBuffer = IndexBuffer::Create(WireframeCubeIndicies);
 
 			//Setting the layout
 			cubeVertexBuffer->SetLayout(CubeLayout);
@@ -98,10 +122,17 @@ namespace BrickStacker
 			m_BrickModel->AddVertexBuffer(cubeVertexBuffer);
 			m_BrickModel->AddVertexBuffer(cubeInstancedVertexBuffer);
 			m_BrickModel->SetIndexBuffer(cubeIndexBuffer);
+
+			m_WireframeBrickModel->AddVertexBuffer(cubeVertexBuffer);
+			m_WireframeBrickModel->AddVertexBuffer(cubeInstancedVertexBuffer);
+			m_WireframeBrickModel->SetIndexBuffer(wireframeCubeIndexBuffer);
+			m_WireframeBrickModel->renderingMode = RenderingMode::Lines;
+			m_WireframeBrickModel->lineWidth = 2;
 		}
 
 		{
 			m_BaseplateModel = VertexArray::Create();
+			m_WireframeBaseplateModel = VertexArray::Create();
 
 			//Cube Verts
 			std::vector<float> CubeVerticies =
@@ -118,6 +149,13 @@ namespace BrickStacker
 			{
 				0, 2, 1,
 				2, 0, 3,
+			};
+
+			//Wireframe Cube Indicies
+			std::vector<uint32_t> WireframeCubeIndicies =
+			{
+				0, 1, 0, 3,
+				2, 1, 2, 3,
 			};
 
 			//Specifying Vertex properties
@@ -140,6 +178,7 @@ namespace BrickStacker
 			Ref<VertexBuffer> cubeVertexBuffer = VertexBuffer::Create(CubeVerticies);
 			Ref<VertexBuffer> cubeInstancedVertexBuffer = VertexBuffer::Create({}, GL_STREAM_DRAW);
 			Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(CubeIndicies);
+			Ref<IndexBuffer> wireframeCubeIndexBuffer = IndexBuffer::Create(WireframeCubeIndicies);
 
 			//Setting the layout
 			cubeVertexBuffer->SetLayout(CubeLayout);
@@ -149,6 +188,12 @@ namespace BrickStacker
 			m_BaseplateModel->AddVertexBuffer(cubeVertexBuffer);
 			m_BaseplateModel->AddVertexBuffer(cubeInstancedVertexBuffer);
 			m_BaseplateModel->SetIndexBuffer(cubeIndexBuffer);
+
+			m_WireframeBaseplateModel->AddVertexBuffer(cubeVertexBuffer);
+			m_WireframeBaseplateModel->AddVertexBuffer(cubeInstancedVertexBuffer);
+			m_WireframeBaseplateModel->SetIndexBuffer(wireframeCubeIndexBuffer);
+			m_WireframeBaseplateModel->renderingMode = RenderingMode::Lines;
+			m_WireframeBaseplateModel->lineWidth = 2;
 		}
 
 		{

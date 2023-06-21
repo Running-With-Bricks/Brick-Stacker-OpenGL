@@ -20,6 +20,7 @@ namespace BrickStacker
 	{
 		m_Specification.Width = Width;
 		m_Specification.Height = Height;
+		glViewport(0, 0, Width, Height);
 		Invalidate();
 	}
 
