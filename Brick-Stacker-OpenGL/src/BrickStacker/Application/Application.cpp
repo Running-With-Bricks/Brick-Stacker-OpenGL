@@ -20,6 +20,7 @@ namespace BrickStacker
 	void Application::Run()
 	{
 		RenderCommand::Clear();
+		AppSettings::LoadSettings();
 
 		m_Window.Update();
 		m_Window.SetVSync(true);
@@ -49,6 +50,7 @@ namespace BrickStacker
 		}
 
 		ImGui::SaveIniSettingsToDisk("imgui.ini");
+		AppSettings::SaveSettings();
 	}
 
 	void Application::Draw()
@@ -102,7 +104,7 @@ namespace BrickStacker
 				{
 					if (auto str = !m_Scene->FilePath.empty() ? m_Scene->FilePath : FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
 					{
-						SceneSerializer::Serialize({ m_Scene->FilePath, m_Scene });
+						SceneSerializer::Serialize({ m_Scene->FilePath, m_Scene, AppSettings::Get().IncludeBrickStackerSpecifics});
 						m_Scene->FilePath = str;
 					}
 				}
@@ -110,12 +112,11 @@ namespace BrickStacker
 				{
 					if (auto str = FileDialogs::SaveFile("Brick-Hill Map (*.brk)\0*.brk\0"); !str.empty())
 					{
-						SceneSerializer::Serialize({ str, m_Scene });
+						SceneSerializer::Serialize({ str, m_Scene, AppSettings::Get().IncludeBrickStackerSpecifics });
 						m_Scene->FilePath = str;
 					}
 				}
-				bool a = false;
-				ImGui::Checkbox("Include Brick-Stacker Specifics", &a);
+				ImGui::Checkbox("Include Brick-Stacker Specifics", &AppSettings::Get().IncludeBrickStackerSpecifics);
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Edit"))
@@ -143,7 +144,47 @@ namespace BrickStacker
 
 				ImGui::EndMenu();
 			}
+			if (ImGui::MenuItem("Settings", NULL, false, true))
+				SettingsDisplayed = !SettingsDisplayed;
 			ImGui::EndMainMenuBar();
+		}
+
+		if (SettingsDisplayed)
+		{
+			ImGui::Begin("Settings");
+
+			if (ImGui::TreeNodeEx("Rendering", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				ImGui::Checkbox("Collision Rendering", &AppSettings::Get().CollisionRendering);
+				ImGui::Checkbox("Wireframe Brick", &AppSettings::Get().WireframeBrickRendering);
+				ImGui::Checkbox("Wireframe Baseplate", &AppSettings::Get().WireframeBaseplateRendering);
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
+			if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				if (ImGui::TreeNodeEx("Movement", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::DragFloat("Start Accelerating After", &m_CameraController.CameraSettings.AccelerateAfter, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Acceleration", &m_CameraController.CameraSettings.Acceleration, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Speed", &m_CameraController.CameraSettings.Speed, .5f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::DragFloat("Shift Multiplier", &m_CameraController.CameraSettings.ShiftMultiplier, .25f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::Checkbox("Ignore Delta Time", &m_CameraController.CameraSettings.IgnoreDeltaTime);
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNodeEx("Turning", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::DragFloat("Sensitivity", &m_CameraController.CameraSettings.Sensitivity, .05f, 0.0125f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+					ImGui::Checkbox("Invert X", &m_CameraController.CameraSettings.InvertX);
+					ImGui::Checkbox("Invert Y", &m_CameraController.CameraSettings.InvertY);
+					ImGui::Checkbox("Invert Scroll", &m_CameraController.CameraSettings.InvertScroll);
+					ImGui::TreePop();
+				}
+				ImGui::TreePop();
+			}
+
+			ImGui::End();
 		}
 
 		auto view = m_Scene->GetAllEntitiesWith<NameComponent>();
@@ -153,7 +194,7 @@ namespace BrickStacker
 		ImGui::Begin("Viewport");
 		m_FocusedViewport = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
-		auto isMouseClicked = ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
+		auto isMouseClicked = m_FocusedViewport && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
 		if (m_ViewportSize != viewportSize && viewportSize.x != 0 && viewportSize.y != 0)
 		{
 			m_ViewportSize = { viewportSize.x, viewportSize.y };
@@ -260,15 +301,16 @@ namespace BrickStacker
 				}
 				ImGui::Separator();
 
-			/// Disabled cuz no other shapes other than Cube so yeah
-			//if (m_SelectedEntity.HasComponent<BrickComponent>())
-			//{
-			//	if (ImGui::TreeNodeEx("Brick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-			//	{
-			//	
-			//	}
-			//}
-			if (m_SelectedEntity.HasComponent<BaseplateComponent>())
+			if (m_SelectedEntity.HasComponent<BrickComponent>())
+			{
+				if (ImGui::TreeNodeEx("Brick", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Checkbox("Collide", &m_SelectedEntity.GetComponent<BrickComponent>().Collision);
+
+					ImGui::TreePop();
+				}
+			}
+			else if (m_SelectedEntity.HasComponent<BaseplateComponent>())
 			{
 				if (ImGui::TreeNodeEx("Baseplate", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 				{
@@ -296,38 +338,20 @@ namespace BrickStacker
 					ImGui::Combo("Type", &type, "Perspective\0Orthographic\0\0");
 					ImGui::Combo("Behaviour", &behaviour, "None\0Free\0Orbit\0\0");
 
+					ImGui::Separator();
+
 					if ((CameraType)type == CameraType::Perspective)
 						ImGui::DragFloat("FOV", &m_SelectedEntity.GetComponent<CameraComponent>().camera.FOV, .1f, 0.1f, 179, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
 					else if ((CameraType)type == CameraType::Orthographic)
 						ImGui::DragFloat("Zoom", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Zoom, .1f, 0.f, 1000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);
 
-					if ((CameraBehaviour)behaviour == CameraBehaviour::Free)
-					{
-						if (ImGui::TreeNodeEx("Movement", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
-						{
-							ImGui::DragFloat("Start Accelerating After", &m_CameraController.CameraSettings.AccelerateAfter, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::DragFloat("Acceleration", &m_CameraController.CameraSettings.Acceleration, .1f, 0.f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::DragFloat("Speed", &m_CameraController.CameraSettings.Speed, .5f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::DragFloat("Shift Multiplier", &m_CameraController.CameraSettings.ShiftMultiplier, .25f, .1f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::Checkbox("Ignore Delta Time", &m_CameraController.CameraSettings.IgnoreDeltaTime);
-							ImGui::TreePop();
-						}
-					}
+					ImGui::Separator();
 
-					if ((CameraBehaviour)behaviour != CameraBehaviour::None)
-					{
-						if (ImGui::TreeNodeEx("Turning", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
-						{
-							if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
-								ImGui::DragFloat("Distance", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Distance, .5f, 0.0125f, 10000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::DragFloat("Sensitivity", &m_CameraController.CameraSettings.Sensitivity, .05f, 0.0125f, 100, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
-							ImGui::Checkbox("Invert X", &m_CameraController.CameraSettings.InvertX);
-							ImGui::Checkbox("Invert Y", &m_CameraController.CameraSettings.InvertY);
-							if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
-								ImGui::Checkbox("Invert Scroll", &m_CameraController.CameraSettings.InvertScroll);
-							ImGui::TreePop();
-						}
-					}
+					if ((CameraBehaviour)behaviour == CameraBehaviour::Orbit)
+						ImGui::DragFloat("Distance", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Distance, .5f, 0.0125f, 10000, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp);
+
+					ImGui::Separator();
+
 					if (ImGui::TreeNodeEx("Planes", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_SpanFullWidth))
 					{
 						ImGui::DragFloat("Near", &m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Near, 0.1f, 0.01f, m_SelectedEntity.GetComponent<CameraComponent>().camera.Planes.Far, NULL, ImGuiSliderFlags_::ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_::ImGuiSliderFlags_Logarithmic);

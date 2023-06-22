@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "Scene.hpp"
 #include "Entity.hpp"
+#include "BrickStacker/Base/AppSettings.hpp"
 
 namespace BrickStacker
 {
@@ -150,9 +151,19 @@ namespace BrickStacker
 
 		glm::mat4 brickMatrix = transform.GetTransform();
 
-		for (size_t x = 0; x < 4; x++)
+		if (!AppSettings::Get().CollisionRendering)
 		{
-			instancedData.push_back(color[x]);
+			for (size_t x = 0; x < 4; x++)
+			{
+				instancedData.push_back(color[x]);
+			}
+		}
+		else
+		{
+			instancedData.push_back(brick.GetComponent<BrickComponent>().Collision);
+			instancedData.push_back(0);
+			instancedData.push_back(!brick.GetComponent<BrickComponent>().Collision);
+			instancedData.push_back(1);
 		}
 		instancedData.push_back(transform.Scale.x);
 		instancedData.push_back(transform.Scale.z);
@@ -173,14 +184,23 @@ namespace BrickStacker
 		{
 			std::vector<float> instancedData;
 
-			for (size_t x = 0; x < 3; x++)
+			if (!AppSettings::Get().CollisionRendering)
 			{
-				instancedData.push_back(baseplateComponent.Color[x]);
+				for (size_t x = 0; x < 3; x++)
+				{
+					instancedData.push_back(baseplateComponent.Color[x]);
+				}
+			}
+			else
+			{
+				instancedData.push_back(1);
+				instancedData.push_back(0);
+				instancedData.push_back(0);
 			}
 			instancedData.push_back((float)baseplateComponent.Size);
 
 			m_AssetManager.GetBaseplateModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
-			m_Renderer.Submit(m_AssetManager.GetBaseplateModel(), m_AssetManager.GetBaseplateShader(), 1);
+			m_Renderer.Submit(AppSettings::Get().WireframeBaseplateRendering ? m_AssetManager.GetWireframeBaseplateModel() : m_AssetManager.GetBaseplateModel(), m_AssetManager.GetBaseplateShader(), 1);
 		}
 
 		auto bricks = GetAllEntitiesWith<BrickComponent>();
@@ -211,7 +231,7 @@ namespace BrickStacker
 
 			m_AssetManager.GetBrickModel()->GetVertexBuffers()[1]->UpdateBuffer(instancedData, GL_STREAM_DRAW);
 
-			m_Renderer.Submit(m_AssetManager.GetBrickModel(), m_AssetManager.GetBrickShader(), count);
+			m_Renderer.Submit(AppSettings::Get().WireframeBrickRendering ? m_AssetManager.GetWireframeBrickModel() : m_AssetManager.GetBrickModel(), m_AssetManager.GetBrickShader(), count);
 		}
 	}
 

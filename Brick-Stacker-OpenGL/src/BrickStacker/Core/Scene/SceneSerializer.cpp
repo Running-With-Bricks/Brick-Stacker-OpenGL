@@ -2,20 +2,7 @@
 #include "SceneSerializer.hpp"
 #include "BrickStacker/Core/Renderer/RenderCommand.hpp"
 
-namespace std
-{
-	void split_str(const std::string& str, const char delim, std::vector<std::string>& out)
-	{
-		// create a stream from the string  
-		std::stringstream s(str);
-
-		std::string s2;
-		while (std::getline(s, s2, delim))
-		{
-			out.push_back(s2); // store the string in s2  
-		}
-	}
-}
+#include "BrickStacker/Base/std_split_str.hpp"
 
 namespace BrickStacker
 {
@@ -133,6 +120,10 @@ namespace BrickStacker
 
 						transform.Rotation = rot;
 					}
+					else if (separated[0].rfind("\t+NOCOLLISION", 0) == 0)
+					{
+						currentEntity.GetComponent<BrickComponent>().Collision = false;
+					}
 					else if (settings.ProcessBrickStackerSpecifics)
 					{
 						if (separated[0].rfind("\t+$BP-INVISIBLE", 0) == 0)
@@ -244,6 +235,7 @@ namespace BrickStacker
 				{
 					const auto& tc = entity.GetComponent<TransformComponent>();
 					const auto& bcc = entity.GetComponent<ColorComponent>();
+					auto& bbcc = entity.GetComponent<BrickComponent>();
 
 					auto scl = tc.Scale;
 					if ((tc.Rotation % 180) != 0)
@@ -256,6 +248,8 @@ namespace BrickStacker
 
 					outFile << pos.x << " " << pos.z << " " << pos.y << " " << scl.x << " " << scl.z << " " << scl.y << " " << bcc.Color.r << " " << bcc.Color.g << " " << bcc.Color.b << " " << bcc.Color.a << std::endl;
 					outFile << "\t+NAME " << entity.GetComponent<NameComponent>().Name << std::endl;
+					if (!bbcc.Collision)
+						outFile << "\t+NOCOLLISION" << std::endl;
 					if (tc.Rotation != 0)
 						outFile << "\t+ROT " << tc.Rotation << std::endl;
 					if (settings.ProcessBrickStackerSpecifics && !bcc.Visible)

@@ -108,6 +108,7 @@ namespace BrickStacker
 	{
 		Shape Model = Shape::Cube;
 		uint32_t ModelID = 0;
+		bool Collision = true;
 
 		BrickComponent() = default;
 		BrickComponent(const BrickComponent&) = default;

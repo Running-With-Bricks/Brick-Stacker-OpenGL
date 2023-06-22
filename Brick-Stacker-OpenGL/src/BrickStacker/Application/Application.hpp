@@ -17,7 +17,8 @@
 #include "BrickStacker/Core/Scene/SceneSerializer.hpp"
 #include "BrickStacker/Core/Scene/CameraController.hpp"
 
-#include "BrickStacker/Base/ImGuiLayer.hpp"
+#include "BrickStacker/Base/AppSettings.hpp"
+#include "BrickStacker/Base/ImGui/ImGuiLayer.hpp"
 #include "BrickStacker/Base/DiscordRichPresence.hpp"
 #include "BrickStacker/Utils/Profiler.hpp"
 #include "BrickStacker/Utils/PlatformUtils.hpp"
@@ -63,6 +64,8 @@ namespace BrickStacker
 
 		float m_LoadTime;
 		bool m_FocusedViewport = false;
+
+		bool SettingsDisplayed = false;
 
 		Timer m_FrameTimer{};
 		Timer m_DrawTimer{};
