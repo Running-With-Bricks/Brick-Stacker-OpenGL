@@ -194,7 +194,7 @@ namespace BrickStacker
 		ImGui::Begin("Viewport");
 		m_FocusedViewport = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
-		auto isMouseClicked = m_FocusedViewport && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
+		auto isMouseClicked = ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
 		if (m_ViewportSize != viewportSize && viewportSize.x != 0 && viewportSize.y != 0)
 		{
 			m_ViewportSize = { viewportSize.x, viewportSize.y };
