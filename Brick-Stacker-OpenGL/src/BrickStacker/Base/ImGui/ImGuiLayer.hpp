@@ -7,6 +7,7 @@
 #include "ImGui/imgui.h"
 #include "ImGui/backends/imgui_impl_glfw.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
+#include "ImGui/ImGuizmo.h"
 
 #include "imgui_stdlib.h"
 #include "imgui_uint_widgets.hpp"
@@ -30,6 +31,7 @@ namespace BrickStacker
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
+			ImGuizmo::BeginFrame();
 		}
 
 		void EndFrame()

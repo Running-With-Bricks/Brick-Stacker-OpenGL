@@ -33,7 +33,7 @@ namespace BrickStacker
 		void OnUpdate(float deltaTime);
 		void RenderScene();
 
-		std::pair<glm::vec3, entt::entity> Raycast(glm::vec3 pos, glm::vec3 dir) { m_PhysicsWorld->Raycast(pos, dir); };
+		std::pair<glm::vec3, entt::entity> Raycast(glm::vec3 pos, glm::vec3 dir) { return m_PhysicsWorld->Raycast(pos, dir); };
 		std::pair<glm::vec3, entt::entity> Raycast(const Camera& camera, glm::vec2 mouseCoords);
 
 		template<typename Component>

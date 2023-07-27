@@ -11,10 +11,9 @@ namespace BrickStacker
 	public:
 		Entity() = default;
 		Entity(entt::entity handle, Scene* scene)
-			: m_EntityHandle{ handle }, m_Scene{ scene }
-		{
-		};
+			: m_EntityHandle{ handle }, m_Scene{ scene } {};
 		Entity(const Entity&) = default;
+		~Entity() = default;
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
@@ -23,7 +22,6 @@ namespace BrickStacker
 			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 			return component;
 		}
-
 
 		template<typename T, typename... Args>
 		T& AddOrReplaceComponent(Args&&... args)
@@ -54,7 +52,6 @@ namespace BrickStacker
 
 		Entity Clone()
 		{
-
 			return m_Scene->DuplicateEntity(*this);
 		}
 
@@ -82,6 +79,6 @@ namespace BrickStacker
 
 	private:
 		entt::entity m_EntityHandle{ entt::null };
-		Scene* m_Scene;
+		Scene* m_Scene{ nullptr };
 	};
 }

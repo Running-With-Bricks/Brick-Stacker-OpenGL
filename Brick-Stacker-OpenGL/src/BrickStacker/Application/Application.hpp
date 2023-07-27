@@ -16,6 +16,7 @@
 #include "BrickStacker/Core/Scene/Entity.hpp"
 #include "BrickStacker/Core/Scene/SceneSerializer.hpp"
 #include "BrickStacker/Core/Scene/CameraController.hpp"
+#include "BrickStacker/Core/Math/Math.hpp"
 
 #include "BrickStacker/Base/AppSettings.hpp"
 #include "BrickStacker/Base/ImGui/ImGuiLayer.hpp"

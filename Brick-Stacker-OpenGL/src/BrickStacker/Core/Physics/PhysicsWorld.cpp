@@ -103,11 +103,12 @@ namespace BrickStacker
 
 	void PhysicsWorld::DeleteBrick(JPH::BodyID ID)
 	{
+		BS_INFO("dsa");
 		auto& BodyInterface = m_PhysicsSystem->GetBodyInterface();
 		auto* ptr = reinterpret_cast<Entity*>(BodyInterface.GetUserData(ID));
-		delete ptr;
+		//delete ptr;
 
-		BodyInterface.RemoveBody(ID);
+		//BodyInterface.RemoveBody(ID);
 	}
 
 	std::pair<glm::vec3, entt::entity> PhysicsWorld::Raycast(glm::vec3 pos, glm::vec3 dir)

@@ -5,6 +5,15 @@ namespace BrickStacker
 {
 	Application::Application()
 	{
+		ImGuizmo::GetStyle().TranslationLineThickness = 6.0f;
+		ImGuizmo::GetStyle().TranslationLineArrowSize = 10.0f;
+		ImGuizmo::GetStyle().RotationLineThickness = 5.0f;
+		ImGuizmo::GetStyle().RotationOuterLineThickness = 5.0f;
+		ImGuizmo::GetStyle().ScaleLineThickness = 6.0f;
+		ImGuizmo::GetStyle().ScaleLineCircleSize = 10.0f;
+		ImGuizmo::GetStyle().HatchedAxisLineThickness = 0.0f;
+		ImGuizmo::GetStyle().CenterCircleSize = 7.5f;
+
 		m_Scene = SceneSerializer::GetDefaultScene();
 		RenderCommand::SetClearColor(m_Scene->FindEntityByName("Lighting").GetComponent<LightingComponent>().SkyColor, 1);
 
@@ -138,7 +147,7 @@ namespace BrickStacker
 				if (ImGui::MenuItem("Cut", "Ctrl+X")) {}
 				if (ImGui::MenuItem("Delete", "Del", false, (m_SelectedEntity && m_SelectedEntity != m_Scene->GetPrimaryCameraEntity() && !m_SelectedEntity.HasComponent<LightingComponent>() && !m_SelectedEntity.HasComponent<BaseplateComponent>())))
 				{
-					m_SelectedEntity.Destroy();
+					//m_SelectedEntity.Destroy();
 					m_SelectedEntity = Entity();
 				}
 
@@ -194,18 +203,19 @@ namespace BrickStacker
 		ImGui::Begin("Viewport");
 		m_FocusedViewport = ImGui::IsWindowFocused();
 		auto viewportSize = ImGui::GetContentRegionAvail();
-		auto isMouseClicked = m_FocusedViewport && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left);
+		auto isMouseClicked = ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left) && (!m_SelectedEntity || !m_SelectedEntity.HasComponent<BrickComponent>() || !ImGuizmo::IsOver());
 		if (m_ViewportSize != viewportSize && viewportSize.x != 0 && viewportSize.y != 0)
 		{
 			m_ViewportSize = { viewportSize.x, viewportSize.y };
 			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
+
+		auto viewportOffset = ImGui::GetWindowPos();
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
 		if (isMouseClicked)
 		{
-			auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
-			auto viewportOffset = ImGui::GetWindowPos();
 			auto pos = ImGui::GetMousePos();
-			auto windowPos = ImGui::GetWindowContentRegionMin();
 			glm::vec2 mappedPos = { (((pos.x - (viewportMinRegion.x + viewportOffset.x)) / viewportSize.x) - 0.5f) * 2, (((pos.y - (viewportMinRegion.y + viewportOffset.y)) / viewportSize.y) - 0.5f) * 2 };
 			auto rres = m_Scene->Raycast(m_Scene->GetPrimaryCameraComponent(), mappedPos);
 			m_SelectedEntity = { rres.second, m_Scene.get()};
@@ -215,6 +225,51 @@ namespace BrickStacker
 
 		if (textureID)
 			ImGui::Image((void*)textureID, ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+
+		if (m_SelectedEntity)
+		{
+			static auto guizmoMode = ImGuizmo::TRANSLATE;
+
+			if (!m_ImGui.GetIO()->WantTextInput)
+			{
+				if (Keyboard::IsKeyDown(Keys::One))
+					guizmoMode = ImGuizmo::TRANSLATE;
+				else if (Keyboard::IsKeyDown(Keys::Two))
+					guizmoMode = ImGuizmo::ROTATE_Y;
+				else if (Keyboard::IsKeyDown(Keys::Three))
+					guizmoMode = ImGuizmo::SCALE;
+			}
+			ImGuizmo::SetOrthographic(m_Scene->GetPrimaryCameraComponent().Type == CameraType::Orthographic);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y, m_ViewportSize.x, m_ViewportSize.y);
+
+			if (m_SelectedEntity.HasComponent<BrickComponent>())
+			{
+				// Entity transform
+				auto& tc = m_SelectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
+
+				float snapRot[] = { 1, 1, 1 };
+
+				ImGuizmo::Manipulate(glm::value_ptr(m_Scene->GetPrimaryCameraComponent().GetViewMatrix()), glm::value_ptr(m_Scene->GetPrimaryCameraComponent().GetProjectionMatrix()),
+					guizmoMode, ImGuizmo::LOCAL, glm::value_ptr(transform),
+					nullptr, snapRot);
+
+				if (ImGuizmo::IsUsing())
+				{
+					glm::vec3 translation, rotation, scale;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
+
+					int deltaRotation = std::round(glm::degrees(rotation.y)) - tc.Rotation;
+					tc.Position = translation;
+					tc.Rotation = glm::degrees(rotation.y);
+					tc.Scale = scale;
+
+					m_SelectedEntity.GetComponent<PhysicsComponent>().Update();
+				}
+			}
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -278,28 +333,27 @@ namespace BrickStacker
 		ImGui::PushID((int)m_SelectedEntity);
 		if (m_SelectedEntity)
 		{
+			if (ImGui::TreeNodeEx("Data", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				//ImGui::LabelText("##n", "Name"); ImGui::SameLine(NULL, 1);
+			if (m_SelectedEntity.HasComponent<NameComponent>())
+				ImGui::InputText("Name", &m_SelectedEntity.GetComponent<NameComponent>().Name);
 
-				if (ImGui::TreeNodeEx("Data", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					//ImGui::LabelText("##n", "Name"); ImGui::SameLine(NULL, 1);
-				if (m_SelectedEntity.HasComponent<NameComponent>())
-					ImGui::InputText("Name", &m_SelectedEntity.GetComponent<NameComponent>().Name);
+			//Shit ass code
+			if (m_SelectedEntity.HasComponent<BrickComponent>())
+				ImGui::LabelText("Class", "Brick");
+			else if (m_SelectedEntity.HasComponent<BaseplateComponent>())
+				ImGui::LabelText("Class", "Baseplate");
+			else if (m_SelectedEntity.HasComponent<CameraComponent>())
+				ImGui::LabelText("Class", "Camera");
+			else if (m_SelectedEntity.HasComponent<LightingComponent>())
+				ImGui::LabelText("Class", "Lighting");
+			else
+				ImGui::LabelText("Class", "Undefined");
 
-				//Shit ass code
-				if (m_SelectedEntity.HasComponent<BrickComponent>())
-					ImGui::LabelText("Class", "Brick");
-				else if (m_SelectedEntity.HasComponent<BaseplateComponent>())
-					ImGui::LabelText("Class", "Baseplate");
-				else if (m_SelectedEntity.HasComponent<CameraComponent>())
-					ImGui::LabelText("Class", "Camera");
-				else if (m_SelectedEntity.HasComponent<LightingComponent>())
-					ImGui::LabelText("Class", "Lighting");
-				else
-					ImGui::LabelText("Class", "Undefined");
-
-					ImGui::TreePop();
-				}
-				ImGui::Separator();
+				ImGui::TreePop();
+			}
+			ImGui::Separator();
 
 			if (m_SelectedEntity.HasComponent<BrickComponent>())
 			{

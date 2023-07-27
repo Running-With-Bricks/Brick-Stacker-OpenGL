@@ -137,6 +137,7 @@ namespace BrickStacker
 			: m_ID(ID), m_PhysicsWorld{ PhysWorld } {}
 		~PhysicsComponent()
 		{
+			BS_INFO("fasada");
 			m_PhysicsWorld->DeleteBrick(m_ID);
 		}
 
